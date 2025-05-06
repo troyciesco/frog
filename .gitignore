@@ -1,2 +1,6 @@
 .vscode
 notes.txt
+
+# Environment variables
+.env*
+!.env.example
