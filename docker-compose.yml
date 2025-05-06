@@ -1,8 +1,25 @@
 services:
+  redis:
+    image: redis:7-alpine
+    command:
+      ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    ports:
+      - "4444:6379"
+    volumes:
+      - redis_data:/data
+    networks: [frog-net]
+    restart: unless-stopped
+  worker:
+    build: ./worker
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on: [redis]
+    networks: [frog-net]
   server:
     build: ./server
     networks: [frog-net]
     env_file: ./server/.env
+    depends_on: [redis]
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
   client:
@@ -14,5 +31,9 @@ services:
     env_file: ./client/.env
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
+
 networks:
   frog-net:
+
+volumes:
+  redis_data:

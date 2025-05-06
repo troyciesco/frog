@@ -1,8 +1,8 @@
-import { Hono, type Context } from "hono"
+import "dotenv/config"
+import { Hono } from "hono"
 import { serve } from "@hono/node-server"
 import { cors } from "hono/cors"
-import { env } from "hono/adapter"
-import "dotenv/config"
+import { route as adminRoute } from "./routes/admin.js"
 
 const app = new Hono()
 app.use(
@@ -17,6 +17,8 @@ app.use(
 app.get("/", (c) => {
 	return c.json({ message: "Hello Hono!" })
 })
+
+app.route("/", adminRoute)
 
 serve(
 	{
