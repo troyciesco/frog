@@ -11,8 +11,7 @@ services:
     restart: unless-stopped
   worker:
     build: ./worker
-    environment:
-      REDIS_URL: redis://redis:6379
+    env_file: ./worker/.env
     depends_on: [redis]
     networks: [frog-net]
   server:
