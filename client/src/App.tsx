@@ -6,8 +6,6 @@ export function App() {
 
 	useEffect(() => {
 		const getMessage = async () => {
-			console.log(API_URL)
-			console.log(import.meta.env.VITE_API_URL)
 			const res = await fetch(API_URL)
 			const data = await res.json()
 			setData(data)
