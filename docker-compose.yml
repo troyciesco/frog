@@ -6,7 +6,10 @@ services:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
   client:
-    build: ./client
+    build:
+      context: ./client
+      args:
+        - VITE_API_URL=${VITE_API_URL}
     networks: [frog-net]
     env_file: ./client/.env
     ports:
