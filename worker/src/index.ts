@@ -26,7 +26,7 @@ async function setupBullMQProcessor(queueName: string) {
 
 			return { jobId: `This is the return value of job (${job.id})` }
 		},
-		{ connection }
+		{ connection, concurrency: 10 }
 	)
 	console.log(
 		`🐸  Worker up – connected to ${connection.options.host}:${connection.options.port}`
