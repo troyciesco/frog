@@ -1,0 +1,56 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  client-tests:
+    name: Client Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install client deps
+        working-directory: ./client
+        run: yarn install
+      - name: Run client tests
+        working-directory: ./client
+        run: yarn test
+
+  server-tests:
+    name: Server Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install server deps
+        working-directory: ./server
+        run: yarn install
+      - name: Run server tests
+        working-directory: ./server
+        run: yarn test
+
+  worker-tests:
+    name: Worker Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install worker deps
+        working-directory: ./worker
+        run: yarn install
+      - name: Run worker tests
+        working-directory: ./worker
+        run: yarn test
