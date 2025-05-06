@@ -10,7 +10,8 @@ const connection = new Redis(
 	process.env.REDIS_URL ?? "redis://127.0.0.1:6379",
 	{
 		maxRetriesPerRequest: null,
-		family: 0
+		family: 0,
+		enableReadyCheck: true
 	}
 )
 
@@ -25,7 +26,7 @@ createBullBoard({
 serverAdapter.setBasePath("/admin/job-ui")
 
 const app = new Hono()
-	.basePath("admin")
+	.basePath("/admin")
 	.route("/job-ui", serverAdapter.registerPlugin())
 	.post("/add", async (c) => {
 		await queue.add("Add", { title: c.req.query("title") })
