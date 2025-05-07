@@ -10,5 +10,6 @@
 		"jsxImportSource": "hono/jsx",
 		"outDir": "./dist"
 	},
+	"include": ["src", "__tests__", "global.d.ts"],
 	"exclude": ["node_modules"]
 }
