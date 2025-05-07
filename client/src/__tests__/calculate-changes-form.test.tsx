@@ -37,7 +37,7 @@ vi.mock("../hooks/use-app-form", () => ({
 }))
 
 describe("CalculateChangesForm Component", () => {
-	beforeEach(() => render(<CalculateChangesForm />))
+	beforeEach(() => render(<CalculateChangesForm onSuccess={vi.fn()} />))
 	it("renders the form", () => {
 		expect(
 			screen.getByRole("heading", { name: "Rebrand Details" })
