@@ -6,9 +6,7 @@ FROM base AS builder
 RUN apk add --no-cache gcompat
 WORKDIR /app
 
-# COPY package*json tsconfig.json src ./
-
-COPY yarn.lock package.json tsconfig.json global.d.ts ./
+COPY yarn.lock package.json tsconfig.json ./
 COPY src/ ./src/
 COPY __tests__/ ./__tests__/
 
