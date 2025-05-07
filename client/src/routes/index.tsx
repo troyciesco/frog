@@ -11,7 +11,9 @@ function Index() {
 
 	useEffect(() => {
 		const getMessage = async () => {
-			const res = await fetch(API_URL)
+			const res = await fetch(`${API_URL}/calculate-changes`, {
+				credentials: "include"
+			})
 			const data = await res.json()
 			setData(data)
 		}
