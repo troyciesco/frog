@@ -28,3 +28,34 @@ export async function signIn({ realm, email, password }: SignInParams) {
 		throw error
 	}
 }
+
+type CalculateChangesParams = {
+	oldBrand: string
+	newBrand: string
+}
+
+export async function calculateChanges({
+	oldBrand,
+	newBrand
+}: CalculateChangesParams) {
+	try {
+		const response = await fetch(`${API_URL}/calculate-changes`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ oldBrand, newBrand }),
+			credentials: "include"
+		})
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}))
+			throw new Error(errorData.message || "Failed to calculate changes.")
+		}
+
+		return await response.json()
+	} catch (error) {
+		console.error("Error calculating changes:", error)
+		throw error
+	}
+}

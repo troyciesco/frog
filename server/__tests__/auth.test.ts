@@ -34,6 +34,8 @@ const validArgs = {
 }
 
 describe("Auth Endpoints", () => {
+	afterAll(() => vi.restoreAllMocks())
+
 	describe("sign-in", () => {
 		beforeAll(() => {
 			// @ts-expect-error because it's mocked
@@ -119,8 +121,6 @@ describe("Auth Endpoints", () => {
 		afterAll(() => {
 			global.fetch = originalFetch
 		})
-
-		afterEach(() => vi.restoreAllMocks())
 
 		it("authenticates a user with valid creds and realm", async () => {
 			const res = await client.auth["sign-in"].$post(
@@ -317,8 +317,8 @@ describe("Auth Endpoints", () => {
 			global.fetch = originalFetch
 		})
 
-		it.skip("signs out the user", async () => {
-			const res = await client.auth["sign-out"].$post({}, {})
+		it("signs out the user", async () => {
+			const res = await client.auth["sign-out"].$post({ json: {} })
 
 			expect(res.status).toBe(200)
 

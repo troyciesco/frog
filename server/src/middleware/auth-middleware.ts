@@ -8,7 +8,6 @@ export const authMiddleware = createMiddleware<{
 		auth: () => { realm: string; ghostSession: string }
 	}
 }>(async (c, next) => {
-	console.log("hit auth mid")
 	const sessionCookie = getCookie(c, SESSION_COOKIE_NAME)
 
 	const session = await verifySession(sessionCookie)
