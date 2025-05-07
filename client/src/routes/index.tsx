@@ -1,7 +1,12 @@
+import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
-import { API_URL } from "./constants"
+import { API_URL } from "../constants"
 
-export function App() {
+export const Route = createFileRoute("/")({
+	component: Index
+})
+
+function Index() {
 	const [data, setData] = useState<{ message: string } | null>(null)
 
 	useEffect(() => {
@@ -12,11 +17,10 @@ export function App() {
 		}
 		getMessage()
 	}, [])
-
 	return (
-		<>
-			<h1>Welcome to frog!</h1>
+		<div className="p-2">
+			<h3>Welcome Home!</h3>
 			<pre>{JSON.stringify(data, null, 2)}</pre>
-		</>
+		</div>
 	)
 }

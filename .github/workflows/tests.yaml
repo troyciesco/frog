@@ -69,16 +69,16 @@ jobs:
         run: yarn install
       - name: Check client TypeScript
         working-directory: ./client
-        run: yarn tsc --noEmit
+        run: yarn typecheck
       - name: Install server deps
         working-directory: ./server
         run: yarn install
       - name: Check server TypeScript
         working-directory: ./server
-        run: yarn tsc --noEmit
+        run: yarn typecheck
       - name: Install worker deps
         working-directory: ./worker
         run: yarn install
       - name: Check worker TypeScript
         working-directory: ./worker
-        run: yarn tsc --noEmit
+        run: yarn typecheck
