@@ -24,7 +24,7 @@ export const app = new Hono()
 	.get("/", (c) => {
 		return c.json({ message: "Hello Hono!" })
 	})
-	.use("/calculate-changes", authMiddleware)
+	.use("/calculate-changes/*", authMiddleware)
 	// TODO: this is a bad spot for this, but putting it in the auth file breaks typesafety in tests
 	.use("/auth/sign-out", authMiddleware)
 	.route("/", calculateChangesRoute)
