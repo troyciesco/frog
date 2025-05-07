@@ -1,1 +1,1 @@
-export const COOKIE_NAME = "frog-session"
+export const SESSION_COOKIE_NAME = "frog-session"

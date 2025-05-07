@@ -29,6 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const isAuthenticated = Boolean(user?.email && user.realm)
 
 	const signOut = useCallback(async () => {
+		const response = await fetch(`${API_URL}/auth/sign-out`, {
+			method: "POST",
+			credentials: "include"
+		})
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}))
+			throw new Error(errorData.message || "Failed to sign out")
+		}
+
 		setStoredUser(null)
 		setUser(null)
 	}, [])

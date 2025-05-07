@@ -9,7 +9,7 @@ export default defineConfig({
 			reporter: ["text", "json", "html"]
 		},
 		env: {
-			PORT: "2222",
+			PORT: "0",
 			ENCRYPTION_KEY: "test-encryption-key",
 			ALLOWED_ORIGINS: "http://localhost:1111"
 		}
