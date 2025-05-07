@@ -8,7 +8,6 @@ WORKDIR /app
 
 COPY yarn.lock package.json tsconfig.json ./
 COPY src/ ./src/
-COPY __tests__/ ./__tests__/
 
 RUN yarn install --frozen-lockfile
 
