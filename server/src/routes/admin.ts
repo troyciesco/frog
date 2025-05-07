@@ -34,4 +34,4 @@ const app = new Hono()
 		return c.json({ ok: true })
 	})
 
-export { app as route }
+export { app as adminRoute }
