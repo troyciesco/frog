@@ -2,23 +2,24 @@ import "dotenv/config"
 import { Hono } from "hono"
 import { serve } from "@hono/node-server"
 import { cors } from "hono/cors"
-import { route as adminRoute } from "./routes/admin.js"
+import { adminRoute } from "./routes/admin.js"
+import { authRoute } from "./routes/auth.js"
 
-const app = new Hono()
-app.use(
-	"*",
-	cors({
-		origin: process.env.ALLOWED_ORIGINS!.split(",").map((s) => s.trim()),
-		credentials: true,
-		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		allowHeaders: ["Content-Type", "Authorization"]
+export const app = new Hono()
+	.use(
+		"*",
+		cors({
+			origin: process.env.ALLOWED_ORIGINS!.split(",").map((s) => s.trim()),
+			credentials: true,
+			allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+			allowHeaders: ["Content-Type", "Authorization"]
+		})
+	)
+	.get("/", (c) => {
+		return c.json({ message: "Hello Hono!" })
 	})
-)
-app.get("/", (c) => {
-	return c.json({ message: "Hello Hono!" })
-})
-
-app.route("/", adminRoute)
+	.route("/", adminRoute)
+	.route("/", authRoute)
 
 serve(
 	{
