@@ -8,7 +8,9 @@ WORKDIR /app
 
 # COPY package*json tsconfig.json src ./
 
-COPY yarn.lock package.json tsconfig.json src ./
+COPY yarn.lock package.json tsconfig.json global.d.ts ./
+COPY src/ ./src/
+COPY __tests__/ ./__tests__/
 
 RUN yarn install --frozen-lockfile
 
