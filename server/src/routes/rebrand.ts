@@ -228,7 +228,7 @@ const app = new Hono()
 		}
 	})
 	.post("/commit", async (c) => {
-		const { realm } = getAuth(c)
+		const { realm, ghostSession } = getAuth(c)
 
 		try {
 			const { oldBrand, newBrand } = await c.req.json<{
@@ -260,9 +260,16 @@ const app = new Hono()
 				)
 			}
 
+			const origin = new URL(c.req.url).origin
 			const job = await rebrandQueue.add("rebrand", {
 				title: `${realm}: Rebrand from ${oldBrand} to ${newBrand}`,
-				realm
+				realm,
+				// don't love this, but it's secure as long as an attacker
+				// doesn't have the Ghost server decrypt key
+				ghostSession,
+				oldBrand,
+				newBrand,
+				origin
 			})
 
 			const redisClient = await rebrandQueue.client

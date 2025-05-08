@@ -8,8 +8,8 @@ export function RebrandCheckForm({
 }) {
 	const form = useAppForm({
 		defaultValues: {
-			oldBrand: "The Wednesday Wombat",
-			newBrand: "Test"
+			oldBrand: "",
+			newBrand: ""
 		},
 		validators: {
 			onSubmit: ({ value }) => {
