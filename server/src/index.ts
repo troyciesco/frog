@@ -32,7 +32,7 @@ export const app = new Hono()
 	.route("/", adminRoute)
 	.route("/", authRoute)
 	.route("/", rebrandRoute)
-	.route("/jobs", jobsRoute)
+	.route("/", jobsRoute)
 
 serve(
 	{
