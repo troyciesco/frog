@@ -44,8 +44,10 @@ queueEvents.on("failed", ({ jobId, failedReason }) =>
 	console.error(`❌  Job ${jobId} failed: ${failedReason}`)
 )
 
-const rebrandQueue = new Queue("rebrand", { connection })
-export const rebrandQueueEvents = new QueueEvents("rebrand", { connection })
+const rebrandQueue = new Queue("rebrand-queue", { connection })
+export const rebrandQueueEvents = new QueueEvents("rebrand-queue", {
+	connection
+})
 
 queueEvents.on("completed", ({ jobId }) =>
 	console.log(`✅  Job ${jobId} completed`)

@@ -1,9 +1,9 @@
-.PHONY: frog frog-down redis redis-down
+.PHONY: frog down redis redis-down
 
 frog:
 	docker compose --project-name frog up -d --build
 
-frog-down:
+down:
 	docker compose --project-name frog down
 
 redis:

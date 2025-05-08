@@ -1,8 +1,11 @@
 import { Hono } from "hono"
 import { getAuth } from "../lib/get-auth.js"
 import { slugify } from "@tryghost/string"
-import { Queue } from "bullmq"
+import { Queue, type JobState } from "bullmq"
 import { connection } from "../lib/redis-connection.js"
+import { rebrandQueue } from "../lib/rebrand-queue.js"
+import { getRedisSetKey } from "../lib/constants.js"
+import { getJobs } from "../lib/get-jobs.js"
 
 type GhostFetchOpts = {
 	realm: string
@@ -123,8 +126,6 @@ const validatePayload = ({
 	return ""
 }
 
-const queue = new Queue("rebrand", { connection })
-
 const app = new Hono()
 	.basePath("/rebrand")
 	.post("/check", async (c) => {
@@ -244,19 +245,30 @@ const app = new Hono()
 				)
 			}
 
-			const jobId = crypto.randomUUID()
+			const jobs = await getJobs(realm)
+			if (
+				jobs.some(
+					(j) => (j.state as JobState) !== "completed" && j.state !== "failed"
+				)
+			) {
+				return c.json(
+					{
+						success: false,
+						message: `Another rebrand for ${realm} is already running.`
+					},
+					400
+				)
+			}
 
-			await queue.add(jobId, {
+			const job = await rebrandQueue.add("rebrand", {
 				title: `${realm}: Rebrand from ${oldBrand} to ${newBrand}`,
 				realm
 			})
 
-			const counts = await queue.getJobCounts("wait", "completed", "failed")
-			console.log(counts)
-			const redisClient = await queue.client
-			await redisClient.sadd(`rebrands:by-realm:${realm}`, jobId)
+			const redisClient = await rebrandQueue.client
+			await redisClient.sadd(getRedisSetKey(realm), job.id!)
 
-			return c.json({ success: true, data: { jobId } }, 200)
+			return c.json({ success: true, data: { jobId: job.id! } }, 200)
 		} catch (error) {
 			console.error("Rebrand commit error:", error)
 			return c.json({ success: false, message: "Server error" }, 500)
