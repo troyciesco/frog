@@ -8,7 +8,24 @@ const app = new Hono()
 	.basePath("/auth")
 	.post("/sign-in", async (c) => {
 		try {
-			const { realm, email, password } = await c.req.json()
+			const { realm: realmField, email, password } = await c.req.json()
+
+			if (
+				!realmField.startsWith("http://") &&
+				!realmField.startsWith("https://")
+			) {
+				return c.json(
+					{
+						success: false,
+						message: "Realm must start with http:// or https://"
+					},
+					400
+				)
+			}
+
+			const realm = realmField.endsWith("/")
+				? realmField.slice(0, -1)
+				: realmField
 
 			const res = await fetch(`${realm}/ghost/api/admin/session`, {
 				method: "POST",
