@@ -36,21 +36,25 @@ type BaseCountParams = {
 const filterFriendlyString = (string: string) => string.replace(/'/g, "\\'")
 
 type GetCountParams = {
-	resource: "posts" | "pages" | "tags"
+	resource: "posts" | "pages" | "tags" | "tiers" | "newsletters"
 	extraFields: string[]
 }
+
 // yay currying!
 const getCount =
 	({ resource, extraFields = [] }: GetCountParams) =>
 	async ({ realm, oldBrand, ghostSession, origin }: BaseCountParams) => {
 		const fields = ["id", ...extraFields].join(",")
 
+		const filterFriendlyOldBrand = filterFriendlyString(oldBrand)
 		const filters = {
-			posts: `plaintext:~'${oldBrand}',title:~'${oldBrand}'`,
-			pages: `plaintext:~'${oldBrand}',title:~'${oldBrand}'`,
-			tags: `name:~'${filterFriendlyString(
-				oldBrand
-			)}',slug:~'${filterFriendlyString(slugify(oldBrand))}'`
+			posts: `plaintext:~'${filterFriendlyOldBrand}',title:~'${filterFriendlyOldBrand}'`,
+			pages: `plaintext:~'${filterFriendlyOldBrand}',title:~'${filterFriendlyOldBrand}'`,
+			tags: `name:~'${filterFriendlyOldBrand}',slug:~'${filterFriendlyString(
+				slugify(oldBrand)
+			)}'`,
+			tiers: `name:~'${filterFriendlyOldBrand}'`,
+			newsletters: `name:~'${filterFriendlyOldBrand}'`
 		}
 
 		const query = new URLSearchParams({
@@ -74,6 +78,15 @@ const getPageCount = getCount({
 const getTagCount = getCount({
 	resource: "tags",
 	extraFields: ["name", "slug"]
+})
+
+const getTierCount = getCount({
+	resource: "tiers",
+	extraFields: []
+})
+const getNewsletterCount = getCount({
+	resource: "newsletters",
+	extraFields: []
 })
 
 const validatePayload = ({
@@ -158,34 +171,79 @@ const app = new Hono()
 				)
 			}
 
-			const [postRes, pageRes, tagRes] = await Promise.all([
-				getPostCount(commonArgs),
-				getPageCount(commonArgs),
-				getTagCount(commonArgs)
-			])
+			// note: offers feel historical, so i didn't include those. but pattern to add would be the same.
+			const [postRes, pageRes, tagRes, tierRes, newsletterRes] =
+				await Promise.all([
+					getPostCount(commonArgs),
+					getPageCount(commonArgs),
+					getTagCount(commonArgs),
+					getTierCount(commonArgs),
+					getNewsletterCount(commonArgs)
+				])
 
 			const errors = [
 				!postRes.ok && "Failed to fetch posts.",
 				!pageRes.ok && "Failed to fetch pages.",
-				!tagRes.ok && "Failed to fetch tags."
+				!tagRes.ok && "Failed to fetch tags.",
+				!tierRes.ok && "Failed to fetch tiers.",
+				!tierRes.ok && "Failed to fetch newsletters."
 			].filter(Boolean)
 
 			if (errors.length > 0) {
 				return c.json({ success: false, message: errors.join(" ") }, 500)
 			}
 
-			const [postData, pageData, tagData] = await Promise.all([
-				postRes.json(),
-				pageRes.json(),
-				tagRes.json()
-			])
+			const [postData, pageData, tagData, tierData, newsletterData] =
+				await Promise.all([
+					postRes.json(),
+					pageRes.json(),
+					tagRes.json(),
+					tierRes.json(),
+					newsletterRes.json()
+				])
+
+			const siteRes = await ghostFetch({
+				...commonArgs,
+				resource: "site",
+				query: ""
+			})
+
+			const siteData = await siteRes.json()
+
+			const site = siteData.site
+				? {
+						title: siteData.site.title,
+						description: siteData.site.description
+				  }
+				: null
 
 			const counts = {
 				posts: postData.meta.pagination.total,
 				pages: pageData.meta.pagination.total,
-				tags: tagData.meta.pagination.total
+				tags: tagData.meta.pagination.total,
+				tiers: tierData.meta.pagination.total,
+				newsletters: newsletterData.meta.pagination.total
 			}
-			return c.json({ success: true, data: counts }, 200)
+
+			// Nice to have, shouldn't fail the entire process
+			// checks how frequently the new brand is used against some Google-related tracking of usage of words
+			let frequency = null
+			try {
+				const wordRes = await fetch(
+					`https://api.datamuse.com/words?sp=${newBrand}&qe=sp&md=f&max=1`
+				)
+				const wordData = await wordRes.json()
+
+				const frequencyTag = wordData[0]?.tags?.find((t: string) =>
+					t.startsWith("f:")
+				)
+
+				frequency = frequencyTag ? parseFloat(frequencyTag.substring(2)) : null
+			} catch (error) {
+				console.error("Word frequency lookup failed:", error)
+			}
+
+			return c.json({ success: true, data: { counts, site, frequency } }, 200)
 		} catch (error) {
 			console.error("Calculate changes error:", error)
 			return c.json({ success: false, message: "Server error" }, 500)

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useAuth } from "../hooks/use-auth"
 import { useState } from "react"
 import { CalculateChangesForm } from "../components/calculate-changes-form"
+import { CommitChangesForm } from "../components/commit-changes-form"
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	component: DashboardPage
@@ -9,24 +10,37 @@ export const Route = createFileRoute("/_auth/dashboard")({
 
 function DashboardPage() {
 	const auth = useAuth()
-	const [data, setData] = useState<{ id: string }[]>([])
+	const [step, setStep] = useState<1 | 2 | 3>(1)
+	const [data, setData] = useState<Record<string, string | number>>({})
+	const [jobId, setJobId] = useState<string | null>(null)
 
-	// useEffect(() => {
-	// 	const getMessage = async () => {
-	// 		const res = await fetch(`${API_URL}/calculate-changes/posts`, {
-	// 			credentials: "include"
-	// 		})
-	// 		const data = await res.json()
-	// 		setData(data)
-	// 	}
-	// 	getMessage()
-	// }, [])
+	const handleCalculateChanges = (d: Record<string, string>) => {
+		setData(d)
+		setStep(2)
+	}
+	const handleCommitChanges = (j: string) => {
+		setJobId(j)
+	}
 
 	return (
 		<section className="grid gap-2 p-2">
 			<p>Hi {JSON.stringify(auth.user)}!</p>
 			<p>You are currently on the dashboard route.</p>
-			<CalculateChangesForm onSuccess={setData} />
+			{step === 1 && <div>active step</div>}
+			<CalculateChangesForm onSuccess={handleCalculateChanges} />
+			{step === 2 && <div>active step</div>}
+			<>
+				{data.frequency && (data.frequency as number) > 5 && (
+					<div role="alert">{data.newBrand} is a very common phrase.</div>
+				)}
+				<CommitChangesForm
+					oldBrand={data.oldBrand as string}
+					newBrand={data.newBrand as string}
+					onSuccess={handleCommitChanges}
+				/>
+			</>
+
+			{step === 3 && <div>job running: {jobId}</div>}
 			<pre>{JSON.stringify(data, null, 2)}</pre>
 		</section>
 	)
