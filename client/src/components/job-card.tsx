@@ -35,7 +35,7 @@ export function JobCard({
 				</CardDescription>
 				<CardContent>
 					<div className="grid grid-cols-2 gap-2">
-						{progress.posts.total > 0 && (
+						{progress?.posts?.total > 0 && (
 							<div>
 								<Chart
 									label="Posts"
@@ -48,7 +48,7 @@ export function JobCard({
 								/>
 							</div>
 						)}
-						{progress.pages.total > 0 && (
+						{progress?.pages?.total > 0 && (
 							<div>
 								<Chart
 									label="Pages"
@@ -61,7 +61,7 @@ export function JobCard({
 								/>
 							</div>
 						)}
-						{progress.tags.total > 0 && (
+						{progress?.tags?.total > 0 && (
 							<div>
 								<Chart
 									label="Tags"
@@ -74,7 +74,7 @@ export function JobCard({
 								/>
 							</div>
 						)}
-						{progress.tiers.total > 0 && (
+						{progress?.tiers?.total > 0 && (
 							<div>
 								<Chart
 									label="Tiers"
@@ -87,7 +87,7 @@ export function JobCard({
 								/>
 							</div>
 						)}
-						{progress.newsletters.total > 0 && (
+						{progress?.newsletters?.total > 0 && (
 							<div>
 								<Chart
 									label="Newsletters"
