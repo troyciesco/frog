@@ -1,3 +1,4 @@
+import { rebrandCommit } from "../api"
 import { useAppForm } from "../hooks/use-app-form"
 
 export function RebrandCommitForm({
@@ -39,11 +40,10 @@ export function RebrandCommitForm({
 			}
 		},
 		onSubmit: async ({ value }) => {
-			// const res = await commitChanges({ ...value })
-			console.log(value, oldBrand, newBrand)
-			const res = { success: true }
+			const res = await rebrandCommit({ ...value, oldBrand, newBrand })
+			console.log(res)
 			if (res.success) {
-				onSuccess("jobid")
+				onSuccess(res.data.jobId)
 			}
 		}
 	})

@@ -35,6 +35,7 @@ async function setupBullMQProcessor(queueName: string) {
 }
 const queue = new Queue("test-queue", { connection })
 export const queueEvents = new QueueEvents("test-queue", { connection })
+await setupBullMQProcessor(queue.name)
 
 queueEvents.on("completed", ({ jobId }) =>
 	console.log(`✅  Job ${jobId} completed`)
@@ -42,4 +43,14 @@ queueEvents.on("completed", ({ jobId }) =>
 queueEvents.on("failed", ({ jobId, failedReason }) =>
 	console.error(`❌  Job ${jobId} failed: ${failedReason}`)
 )
-await setupBullMQProcessor(queue.name)
+
+const rebrandQueue = new Queue("rebrand", { connection })
+export const rebrandQueueEvents = new QueueEvents("rebrand", { connection })
+
+queueEvents.on("completed", ({ jobId }) =>
+	console.log(`✅  Job ${jobId} completed`)
+)
+queueEvents.on("failed", ({ jobId, failedReason }) =>
+	console.error(`❌  Job ${jobId} failed: ${failedReason}`)
+)
+await setupBullMQProcessor(rebrandQueue.name)

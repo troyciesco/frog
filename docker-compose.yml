@@ -2,9 +2,17 @@ services:
   redis:
     image: redis:7-alpine
     command:
-      ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+      [
+        "redis-server",
+        "--port",
+        "4444",
+        "--appendonly",
+        "yes",
+        "--appendfsync",
+        "everysec"
+      ]
     ports:
-      - "4444:6379"
+      - "4444:4444"
     volumes:
       - redis_data:/data
     networks: [frog-net]
