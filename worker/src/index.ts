@@ -335,7 +335,6 @@ const rebrandProcessor = async (job: Job) => {
 	)
 
 	await job.updateProgress({
-		test: 0,
 		...progressObj
 	})
 
@@ -348,7 +347,7 @@ const rebrandProcessor = async (job: Job) => {
 		...commonArgs
 	})
 
-	return { jobId: `This is the return value of job (${job.id})`, counts }
+	return { counts }
 }
 
 async function setupRebrandWorker(queueName: string) {

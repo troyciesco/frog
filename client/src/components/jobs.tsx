@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react"
 import { getJobs } from "../api"
+import { JobCard } from "./job-card"
+import type { Job } from "@/types"
 
 export function Jobs() {
-	const [jobs, setJobs] = useState([])
+	const [jobs, setJobs] = useState<Job[]>([])
 
 	useEffect(() => {
 		const poll = async () => {
 			try {
 				const res = await getJobs()
-				setJobs(res.data.jobs)
+				setJobs(res?.data.jobs || [])
 
 				// if there's an active job, re-check results every 2 seconds
 				// @TODO: not efficient to fetch all the jobs all over again, so should just fetch running ones at some point
 				if (
-					res.data.jobs?.some(
-						// @ts-expect-error need to add types
+					res?.data.jobs?.some(
 						(j) => j.state !== "completed" && j.state !== "failed"
 					)
 				) {
@@ -30,7 +31,18 @@ export function Jobs() {
 
 	return (
 		<div className="text-wrap max-w-2xl overflow-x-hidden">
-			<div>jobs</div>
+			<div>Previous Jobs</div>
+			<div className="flex flex-col gap-4">
+				{jobs?.map((job) => (
+					<JobCard
+						key={job.id}
+						id={job.id}
+						title={job.data.title}
+						progress={job.progress}
+						state={job.state}
+					/>
+				))}
+			</div>
 			<pre>{JSON.stringify(jobs, null, 2)}</pre>
 		</div>
 	)

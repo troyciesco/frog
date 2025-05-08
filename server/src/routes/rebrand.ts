@@ -262,7 +262,7 @@ const app = new Hono()
 
 			const origin = new URL(c.req.url).origin
 			const job = await rebrandQueue.add("rebrand", {
-				title: `${realm}: Rebrand from ${oldBrand} to ${newBrand}`,
+				title: `Rebrand from ${oldBrand} to ${newBrand}`,
 				realm,
 				// don't love this, but it's secure as long as an attacker
 				// doesn't have the Ghost server decrypt key

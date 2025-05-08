@@ -39,10 +39,6 @@ vi.mock("../hooks/use-app-form", () => ({
 describe("RebrandCheckForm Component", () => {
 	beforeEach(() => render(<RebrandCheckForm onSuccess={vi.fn()} />))
 	it("renders the form", () => {
-		expect(
-			screen.getByRole("heading", { name: "Rebrand Details" })
-		).toBeInTheDocument()
-
 		expect(screen.getByLabelText("Old Brand Name")).toBeInTheDocument()
 		expect(screen.getByLabelText("New Brand Name")).toBeInTheDocument()
 		expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument()

@@ -32,8 +32,16 @@ function DashboardPage() {
 	}
 
 	return (
-		<section className="grid md:grid-cols-2 auto-rows-min gap-4 p-2">
-			<Card>
+		<section className="grid md:grid-cols-2 auto-rows-min gap-4 p-2 relative">
+			<Card className="relative">
+				{jobId && (
+					<div className="absolute w-full h-full bg-gray-400/30 backdrop-blur-md flex flex-col items-center justify-center z-10 px-2 top-0 rounded-xl">
+						<div className="text-center text-balance">
+							Job is currently running, please wait for that one to finish
+							before starting a new one.
+						</div>
+					</div>
+				)}
 				<CardHeader>
 					<CardTitle>F.R.O.G. Rebranding Tool</CardTitle>
 					<CardDescription>
@@ -41,19 +49,21 @@ function DashboardPage() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{step === 1 && <div>active step</div>}
-					<RebrandCheckForm onSuccess={handleCalculateChanges} />
-					{step === 2 && <div>active step</div>}
-					<>
-						{data.frequency && (data.frequency as number) > 5 && (
-							<div role="alert">{data.newBrand} is a very common phrase.</div>
-						)}
-						<RebrandCommitForm
-							oldBrand={data.oldBrand as string}
-							newBrand={data.newBrand as string}
-							onSuccess={handleCommitChanges}
-						/>
-					</>
+					<div className="flex flex-col gap-8">
+						<div>
+							<RebrandCheckForm onSuccess={handleCalculateChanges} />
+						</div>
+						<div>
+							{data.frequency && (data.frequency as number) > 5 && (
+								<div role="alert">{data.newBrand} is a very common phrase.</div>
+							)}
+							<RebrandCommitForm
+								oldBrand={data.oldBrand as string}
+								newBrand={data.newBrand as string}
+								onSuccess={handleCommitChanges}
+							/>
+						</div>
+					</div>
 				</CardContent>
 			</Card>
 			<Card>

@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_auth")({
 	beforeLoad: ({ context, location }) => {
 		if (!context?.auth?.isAuthenticated) {
 			throw redirect({
-				to: "/sign-in",
+				to: "/",
 				search: {
 					redirect: location.href
 				}
@@ -35,13 +35,11 @@ function AuthLayout() {
 	const auth = useAuth()
 
 	const handleSignOut = () => {
-		if (window.confirm("Are you sure you want to logout?")) {
-			auth.signOut().then(() => {
-				router.invalidate().finally(() => {
-					navigate({ to: "/" })
-				})
+		auth.signOut().then(() => {
+			router.invalidate().finally(() => {
+				navigate({ to: "/" })
 			})
-		}
+		})
 	}
 
 	return (
