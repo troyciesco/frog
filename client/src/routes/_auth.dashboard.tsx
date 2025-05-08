@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { RebrandCheckForm } from "../components/rebrand-check-form"
 import { RebrandCommitForm } from "../components/rebrand-commit-form"
 import { Jobs } from "../components/jobs"
@@ -13,6 +13,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getJobs } from "@/api"
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	component: DashboardPage
@@ -35,7 +36,31 @@ function DashboardPage() {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const [data, setData] = useState<any>({})
 	const [jobId, setJobId] = useState<string | null>(null)
+	const [initialLoading, setInitialLoading] = useState(true)
 
+	// not ideal to basically do the same fetch here and then again in Jobs,
+	// but running low on time - ideally i'd see if Tanstack Router's beforeLoad
+	// piece would be useful, and/or implement Tanstack Query for good caching.
+	useEffect(() => {
+		const findActiveJob = async () => {
+			try {
+				const res = await getJobs()
+				const activeJob = res?.data.jobs?.find(
+					(j) => j.state !== "completed" && j.state !== "failed"
+				)
+
+				if (activeJob) {
+					setJobId(activeJob.id)
+				}
+
+				setInitialLoading(false)
+			} catch (err) {
+				console.error(err)
+			}
+		}
+
+		findActiveJob()
+	}, [])
 	const handleCheckChanges = (d: Record<string, string>) => {
 		setData(d)
 		setStep(2)
@@ -43,6 +68,14 @@ function DashboardPage() {
 	const handleCommitChanges = (j: string) => {
 		setStep(3)
 		setJobId(j)
+	}
+
+	if (initialLoading) {
+		return (
+			<div className="flex justify-center items-center p-4">
+				<div className="animate-spin text-2xl">🐸</div>
+			</div>
+		)
 	}
 
 	return (
@@ -144,7 +177,12 @@ function DashboardPage() {
 							</AlertTitle>
 						</Alert>
 					)}
-					<Jobs />
+					<Jobs
+						onPollComplete={() => {
+							setJobId(null)
+							setStep(1)
+						}}
+					/>
 				</CardContent>
 			</Card>
 		</section>

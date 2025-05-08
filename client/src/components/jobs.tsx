@@ -3,7 +3,7 @@ import { getJobs } from "../api"
 import { JobCard } from "./job-card"
 import type { Job } from "@/types"
 
-export function Jobs() {
+export function Jobs({ onPollComplete }: { onPollComplete: () => void }) {
 	const [jobs, setJobs] = useState<Job[]>([])
 	const [initialLoading, setInitialLoading] = useState(true)
 	useEffect(() => {
@@ -20,6 +20,9 @@ export function Jobs() {
 					)
 				) {
 					setTimeout(poll, 2000)
+				} else {
+					// This way the parent component knows it can unlock the UI
+					onPollComplete()
 				}
 			} catch (err) {
 				console.error(err)
@@ -27,6 +30,7 @@ export function Jobs() {
 		}
 
 		poll()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	if (initialLoading) {
