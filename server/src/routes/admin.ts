@@ -5,9 +5,9 @@ import { serveStatic } from "@hono/node-server/serve-static"
 import { Queue } from "bullmq"
 import { Hono } from "hono"
 import { connection } from "../lib/redis-connection.js"
+import { rebrandQueue } from "../lib/rebrand-queue.js"
 
 const queue = new Queue("test-queue", { connection })
-const rebrandQueue = new Queue("rebrand", { connection })
 
 const serverAdapter = new HonoAdapter(serveStatic)
 
