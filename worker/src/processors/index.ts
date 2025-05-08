@@ -1,7 +1,9 @@
 import type { Job } from "bullmq"
 import { resources } from "../utils/index.js"
 import { getOne } from "../services/ghost-api.js"
-import { processPostsOrPages } from "./posts.js"
+import { processPostsOrPages } from "./posts-or-pages.js"
+import { processTagsOrTiers } from "./tags-or-tiers.js"
+import { processNewsletters } from "./newsletters.js"
 
 export const rebrandProcessor = async (job: Job) => {
 	const { realm, ghostSession, oldBrand, newBrand, origin } = job.data
@@ -53,6 +55,21 @@ export const rebrandProcessor = async (job: Job) => {
 		resource: "pages",
 		newBrand,
 		total: counts["pages"],
+		...commonArgs
+	})
+	await processTagsOrTiers({
+		job,
+		resource: "tiers",
+		newBrand,
+		total: counts["tiers"],
+		...commonArgs
+	})
+
+	await processNewsletters({
+		job,
+		resource: "newsletters",
+		newBrand,
+		total: counts["newsletters"],
 		...commonArgs
 	})
 
