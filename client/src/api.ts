@@ -23,7 +23,8 @@ export async function signIn({ realm, email, password }: SignInParams) {
 			throw new Error(errorData.message || "Failed to sign in")
 		}
 
-		return await res.json()
+		const json = await res.json()
+		return { res: json, error: null }
 	} catch (error) {
 		console.error("Sign in error:", error)
 		throw error
@@ -48,13 +49,19 @@ export async function rebrandCheck({ oldBrand, newBrand }: RebrandCheckParams) {
 
 		if (!res.ok) {
 			const errorData = await res.json().catch(() => ({}))
-			throw new Error(errorData.message || "Failed to calculate changes.")
+			return {
+				res: null,
+				error: errorData.message || "Failed checking changes."
+			}
 		}
 
-		return await res.json()
+		const json = await res.json()
+		return { res: json, error: null }
 	} catch (error) {
-		console.error("Error calculating changes:", error)
-		throw error
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred"
+		console.error("Error checking changes:", error)
+		return { res: null, error: message }
 	}
 }
 
@@ -91,13 +98,18 @@ export async function rebrandCommit({
 
 		if (!res.ok) {
 			const errorData = await res.json().catch(() => ({}))
-			throw new Error(errorData.message || "Failed to commit changes.")
+			return {
+				res: null,
+				error: errorData.message || "Failed to commit changes."
+			}
 		}
 
 		return await res.json()
 	} catch (error) {
+		const message =
+			error instanceof Error ? error.message : "An unknown error occurred"
 		console.error("Error committing changes:", error)
-		throw error
+		return { res: null, error: message }
 	}
 }
 

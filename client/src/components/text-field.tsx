@@ -25,6 +25,7 @@ export default function TextField({
 					type="text"
 					required
 					value={field.state.value}
+					className="bg-white"
 					onChange={(e) => field.handleChange(e.target.value)}
 				/>
 			</div>
