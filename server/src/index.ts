@@ -4,6 +4,7 @@ import { serve } from "@hono/node-server"
 import { cors } from "hono/cors"
 import { adminRoute } from "./routes/admin.js"
 import { authRoute } from "./routes/auth.js"
+import { jobsRoute } from "./routes/jobs.js"
 import { csrf } from "hono/csrf"
 import { secureHeaders } from "hono/secure-headers"
 import { authMiddleware } from "./middleware/auth-middleware.js"
@@ -25,11 +26,13 @@ export const app = new Hono()
 		return c.json({ message: "Hello Hono!" })
 	})
 	.use("/rebrand/*", authMiddleware)
+	.use("/jobs", authMiddleware)
 	// TODO: this is a bad spot for this, but putting it in the auth file breaks typesafety in tests
 	.use("/auth/sign-out", authMiddleware)
-	.route("/", rebrandRoute)
 	.route("/", adminRoute)
 	.route("/", authRoute)
+	.route("/", rebrandRoute)
+	.route("/jobs", jobsRoute)
 
 serve(
 	{

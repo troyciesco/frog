@@ -4,7 +4,7 @@ import { getAuth } from "../lib/get-auth.js"
 import { getRedisSetKey } from "../lib/constants.js"
 
 const app = new Hono()
-	.basePath("/jobs")
+	// .basePath("/jobs")
 	.get("/", async (c) => {
 		const { realm } = getAuth(c)
 		const redisClient = await rebrandQueue.client
