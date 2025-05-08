@@ -69,6 +69,7 @@ export function RebrandCommitForm({
 				newBrand
 			})
 
+			console.log(res)
 			if (res?.success) {
 				onSuccess(res.data.jobId)
 			}
@@ -109,7 +110,9 @@ export function RebrandCommitForm({
 					form.handleSubmit()
 				}}>
 				<CardContent>
-					<fieldset className="grid w-full items-center gap-4">
+					<fieldset
+						className="grid w-full items-center gap-4"
+						disabled={step !== 2 || form.state?.isSubmitting}>
 						<form.AppField
 							name="hasBackedUp"
 							children={(field) => (
@@ -149,9 +152,7 @@ export function RebrandCommitForm({
 									hasBackedUp && hasCheckedSpelling && hasSpotChecked
 								return (
 									<form.SubscribeButton
-										disabled={
-											step !== 2 || form.state.isSubmitting || !allChecked
-										}
+										disabled={step !== 2 || isSubmitting || !allChecked}
 										label={isSubmitting ? "Submitting..." : "Submit"}
 									/>
 								)

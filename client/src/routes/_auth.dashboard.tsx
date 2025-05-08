@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	component: DashboardPage
@@ -45,18 +46,21 @@ function DashboardPage() {
 	}
 
 	return (
-		<section className="grid md:grid-cols-2 auto-rows-min gap-4 p-2 relative">
+		<section className="grid md:grid-cols-2 gap-4 p-2 relative">
 			<Card className="relative">
 				{jobId && (
-					<div className="absolute w-full h-full bg-gray-400/30 backdrop-blur-md flex flex-col items-center justify-center z-10 px-2 top-0 rounded-xl">
-						<div className="text-center text-balance">
+					<div className="absolute w-full h-full bg-gray-400/30 backdrop-blur-md flex flex-col items-center z-10 px-2 top-0 rounded-xl">
+						<div className="text-center text-balance mt-8">
 							Job is currently running, please wait for that one to finish
 							before starting a new one.
 						</div>
 					</div>
 				)}
 				<CardHeader>
-					<CardTitle>F.R.O.G. Rebranding Tool</CardTitle>
+					<CardTitle>
+						<span className="font-black text-emerald-600">F.R.O.G.</span>{" "}
+						Rebranding Tool
+					</CardTitle>
 					<CardDescription>
 						Enter your brand info, verify the number of updates, and let the job
 						run! Or maybe...hop?
@@ -130,7 +134,16 @@ function DashboardPage() {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{step === 3 && <div>job running: {jobId}</div>}
+					{step === 3 && jobId && (
+						<Alert>
+							<AlertTitle>
+								New job created,{" "}
+								<Button variant="link" onClick={() => window.location.reload()}>
+									refresh to follow progress.
+								</Button>
+							</AlertTitle>
+						</Alert>
+					)}
 					<Jobs />
 				</CardContent>
 			</Card>

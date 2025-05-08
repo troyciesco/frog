@@ -64,7 +64,7 @@ export function RebrandCheckForm({
 				}}>
 				<CardContent>
 					<fieldset
-						disabled={step !== 1 || form.state.isSubmitting}
+						disabled={step !== 1 || form.state?.isSubmitting}
 						className="grid w-full items-center gap-4">
 						<form.AppField
 							name="oldBrand"
@@ -82,7 +82,7 @@ export function RebrandCheckForm({
 							{(isSubmitting) => {
 								return (
 									<form.SubscribeButton
-										disabled={step !== 1 || form.state.isSubmitting}
+										disabled={step !== 1 || isSubmitting}
 										label={isSubmitting ? "Submitting..." : "Submit"}
 									/>
 								)
