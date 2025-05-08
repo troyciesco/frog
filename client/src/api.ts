@@ -56,3 +56,46 @@ export async function rebrandCheck({ oldBrand, newBrand }: RebrandCheckParams) {
 		throw error
 	}
 }
+
+type RebrandCommitParams = {
+	oldBrand: string
+	newBrand: string
+	hasBackedUp: boolean
+	hasCheckedSpelling: boolean
+	hasSpotChecked: boolean
+}
+
+export async function rebrandCommit({
+	oldBrand,
+	newBrand,
+	hasBackedUp,
+	hasCheckedSpelling,
+	hasSpotChecked
+}: RebrandCommitParams) {
+	try {
+		const response = await fetch(`${API_URL}/rebrand/commit`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				oldBrand,
+				newBrand,
+				hasBackedUp,
+				hasCheckedSpelling,
+				hasSpotChecked
+			}),
+			credentials: "include"
+		})
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}))
+			throw new Error(errorData.message || "Failed to commit changes.")
+		}
+
+		return await response.json()
+	} catch (error) {
+		console.error("Error committing changes:", error)
+		throw error
+	}
+}

@@ -4,23 +4,15 @@ import { BullMQAdapter } from "@bull-board/api/bullMQAdapter.js"
 import { serveStatic } from "@hono/node-server/serve-static"
 import { Queue } from "bullmq"
 import { Hono } from "hono"
-import { Redis } from "ioredis"
-
-const connection = new Redis(
-	process.env.REDIS_URL ?? "redis://127.0.0.1:6379",
-	{
-		maxRetriesPerRequest: null,
-		family: 0,
-		enableReadyCheck: true
-	}
-)
+import { connection } from "../lib/redis-connection.js"
 
 const queue = new Queue("test-queue", { connection })
+const rebrandQueue = new Queue("rebrand", { connection })
 
 const serverAdapter = new HonoAdapter(serveStatic)
 
 createBullBoard({
-	queues: [new BullMQAdapter(queue)],
+	queues: [new BullMQAdapter(queue), new BullMQAdapter(rebrandQueue)],
 	serverAdapter
 })
 serverAdapter.setBasePath("/admin/job-ui")
@@ -29,7 +21,7 @@ const app = new Hono()
 	.basePath("/admin")
 	.route("/job-ui", serverAdapter.registerPlugin())
 	.post("/add", async (c) => {
-		await queue.add("Add", { title: c.req.query("title") })
+		await queue.add(crypto.randomUUID(), { title: c.req.query("title") })
 
 		return c.json({ ok: true })
 	})

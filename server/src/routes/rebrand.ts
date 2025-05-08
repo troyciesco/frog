@@ -1,6 +1,8 @@
 import { Hono } from "hono"
 import { getAuth } from "../lib/get-auth.js"
 import { slugify } from "@tryghost/string"
+import { Queue } from "bullmq"
+import { connection } from "../lib/redis-connection.js"
 
 type GhostFetchOpts = {
 	realm: string
@@ -121,6 +123,8 @@ const validatePayload = ({
 	return ""
 }
 
+const queue = new Queue("rebrand", { connection })
+
 const app = new Hono()
 	.basePath("/rebrand")
 	.post("/check", async (c) => {
@@ -218,12 +222,45 @@ const app = new Hono()
 
 			return c.json({ success: true, data: { counts, site, frequency } }, 200)
 		} catch (error) {
-			console.error("Calculate changes error:", error)
+			console.error("Rebrand check error:", error)
 			return c.json({ success: false, message: "Server error" }, 500)
 		}
 	})
 	.post("/commit", async (c) => {
-		return c.json({ success: true, message: "Not implemented" }, 200)
+		const { realm } = getAuth(c)
+
+		try {
+			const { oldBrand, newBrand } = await c.req.json<{
+				oldBrand: string
+				newBrand: string
+			}>()
+
+			const payloadValidationMessage = validatePayload({ oldBrand, newBrand })
+
+			if (payloadValidationMessage) {
+				return c.json(
+					{ success: false, message: payloadValidationMessage },
+					400
+				)
+			}
+
+			const jobId = crypto.randomUUID()
+
+			await queue.add(jobId, {
+				title: `${realm}: Rebrand from ${oldBrand} to ${newBrand}`,
+				realm
+			})
+
+			const counts = await queue.getJobCounts("wait", "completed", "failed")
+			console.log(counts)
+			const redisClient = await queue.client
+			await redisClient.sadd(`rebrands:by-realm:${realm}`, jobId)
+
+			return c.json({ success: true, data: { jobId } }, 200)
+		} catch (error) {
+			console.error("Rebrand commit error:", error)
+			return c.json({ success: false, message: "Server error" }, 500)
+		}
 	})
 
 export { app as rebrandRoute }
