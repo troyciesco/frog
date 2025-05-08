@@ -3,6 +3,7 @@ import { useAuth } from "../hooks/use-auth"
 import { useState } from "react"
 import { RebrandCheckForm } from "../components/rebrand-check-form"
 import { RebrandCommitForm } from "../components/rebrand-commit-form"
+import { Jobs } from "../components/jobs"
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	component: DashboardPage
@@ -19,6 +20,7 @@ function DashboardPage() {
 		setStep(2)
 	}
 	const handleCommitChanges = (j: string) => {
+		setStep(3)
 		setJobId(j)
 	}
 
@@ -26,6 +28,7 @@ function DashboardPage() {
 		<section className="grid gap-2 p-2">
 			<p>Hi {JSON.stringify(auth.user)}!</p>
 			<p>You are currently on the dashboard route.</p>
+			<Jobs />
 			{step === 1 && <div>active step</div>}
 			<RebrandCheckForm onSuccess={handleCalculateChanges} />
 			{step === 2 && <div>active step</div>}

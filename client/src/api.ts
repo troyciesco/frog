@@ -99,3 +99,39 @@ export async function rebrandCommit({
 		throw error
 	}
 }
+
+export async function getJobs() {
+	try {
+		const response = await fetch(`${API_URL}/jobs`, {
+			credentials: "include"
+		})
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}))
+			throw new Error(errorData.message || "Failed to get jobs.")
+		}
+
+		return await response.json()
+	} catch (error) {
+		console.error("Error getting jobs:", error)
+		throw error
+	}
+}
+
+export async function getJobById(jobId: string) {
+	try {
+		const response = await fetch(`${API_URL}/jobs/${jobId}`, {
+			credentials: "include"
+		})
+
+		if (!response.ok) {
+			const errorData = await response.json().catch(() => ({}))
+			throw new Error(errorData.message || "Failed to get job.")
+		}
+
+		return await response.json()
+	} catch (error) {
+		console.error("Error getting job:", error)
+		throw error
+	}
+}
