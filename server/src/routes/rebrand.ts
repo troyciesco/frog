@@ -122,35 +122,8 @@ const validatePayload = ({
 }
 
 const app = new Hono()
-	.basePath("/calculate-changes")
-	.get("/posts", async (c) => {
-		const { realm, ghostSession } = getAuth(c)
-
-		try {
-			const ghostRes = await fetch(
-				`${realm}/ghost/api/admin/posts?limit=1&fields=id,title,lexical&formats=plaintext`,
-				{
-					credentials: "include",
-					headers: {
-						Cookie: ghostSession,
-						Origin: new URL(c.req.url).origin
-					}
-				}
-			)
-
-			if (!ghostRes.ok) {
-				return c.json({ success: false, message: "Failed to fetch posts" }, 500)
-			}
-
-			const posts = await ghostRes.json()
-
-			return c.json({ success: true, posts: posts.posts })
-		} catch (error) {
-			console.error("Posts fetch error:", error)
-			return c.json({ success: false, message: "Server error" }, 500)
-		}
-	})
-	.post("/", async (c) => {
+	.basePath("/rebrand")
+	.post("/check", async (c) => {
 		const { realm, ghostSession } = getAuth(c)
 
 		try {
@@ -249,5 +222,8 @@ const app = new Hono()
 			return c.json({ success: false, message: "Server error" }, 500)
 		}
 	})
+	.post("/commit", async (c) => {
+		return c.json({ success: true, message: "Not implemented" }, 200)
+	})
 
-export { app as calculateChangesRoute }
+export { app as rebrandRoute }

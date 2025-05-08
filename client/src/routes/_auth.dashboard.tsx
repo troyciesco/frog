@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useAuth } from "../hooks/use-auth"
 import { useState } from "react"
-import { CalculateChangesForm } from "../components/calculate-changes-form"
-import { CommitChangesForm } from "../components/commit-changes-form"
+import { RebrandCheckForm } from "../components/rebrand-check-form"
+import { RebrandCommitForm } from "../components/rebrand-commit-form"
 
 export const Route = createFileRoute("/_auth/dashboard")({
 	component: DashboardPage
@@ -27,13 +27,13 @@ function DashboardPage() {
 			<p>Hi {JSON.stringify(auth.user)}!</p>
 			<p>You are currently on the dashboard route.</p>
 			{step === 1 && <div>active step</div>}
-			<CalculateChangesForm onSuccess={handleCalculateChanges} />
+			<RebrandCheckForm onSuccess={handleCalculateChanges} />
 			{step === 2 && <div>active step</div>}
 			<>
 				{data.frequency && (data.frequency as number) > 5 && (
 					<div role="alert">{data.newBrand} is a very common phrase.</div>
 				)}
-				<CommitChangesForm
+				<RebrandCommitForm
 					oldBrand={data.oldBrand as string}
 					newBrand={data.newBrand as string}
 					onSuccess={handleCommitChanges}

@@ -7,7 +7,7 @@ import { authRoute } from "./routes/auth.js"
 import { csrf } from "hono/csrf"
 import { secureHeaders } from "hono/secure-headers"
 import { authMiddleware } from "./middleware/auth-middleware.js"
-import { calculateChangesRoute } from "./routes/calculate-changes.js"
+import { rebrandRoute } from "./routes/rebrand.js"
 
 const origin = process.env.ALLOWED_ORIGINS!.split(",").map((s) => s.trim())
 
@@ -24,10 +24,10 @@ export const app = new Hono()
 	.get("/", (c) => {
 		return c.json({ message: "Hello Hono!" })
 	})
-	.use("/calculate-changes/*", authMiddleware)
+	.use("/rebrand/*", authMiddleware)
 	// TODO: this is a bad spot for this, but putting it in the auth file breaks typesafety in tests
 	.use("/auth/sign-out", authMiddleware)
-	.route("/", calculateChangesRoute)
+	.route("/", rebrandRoute)
 	.route("/", adminRoute)
 	.route("/", authRoute)
 

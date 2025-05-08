@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
 import "@testing-library/jest-dom"
-import { CalculateChangesForm } from "../components/calculate-changes-form"
+import { RebrandCheckForm } from "../components/rebrand-check-form"
 import { vi } from "vitest"
 
 type TextFieldType = {
@@ -36,8 +36,8 @@ vi.mock("../hooks/use-app-form", () => ({
 	})
 }))
 
-describe("CalculateChangesForm Component", () => {
-	beforeEach(() => render(<CalculateChangesForm onSuccess={vi.fn()} />))
+describe("RebrandCheckForm Component", () => {
+	beforeEach(() => render(<RebrandCheckForm onSuccess={vi.fn()} />))
 	it("renders the form", () => {
 		expect(
 			screen.getByRole("heading", { name: "Rebrand Details" })

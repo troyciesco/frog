@@ -1,6 +1,6 @@
 import { useAppForm } from "../hooks/use-app-form"
 
-export function CommitChangesForm({
+export function RebrandCommitForm({
 	oldBrand,
 	newBrand,
 	onSuccess
