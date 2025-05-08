@@ -1,4 +1,4 @@
-# FROG - For Rebranding on Ghost
+# F.R.O.G. - For Rebranding on Ghost
 
 ## Requirements
 1. Docker
