@@ -20,10 +20,5 @@ serverAdapter.setBasePath("/admin/job-ui")
 const app = new Hono()
 	.basePath("/admin")
 	.route("/job-ui", serverAdapter.registerPlugin())
-	.post("/add", async (c) => {
-		await queue.add(crypto.randomUUID(), { title: c.req.query("title") })
-
-		return c.json({ ok: true })
-	})
 
 export { app as adminRoute }

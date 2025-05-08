@@ -104,7 +104,8 @@ export async function rebrandCommit({
 			}
 		}
 
-		return await res.json()
+		const json = await res.json()
+		return { res: json, error: null }
 	} catch (error) {
 		const message =
 			error instanceof Error ? error.message : "An unknown error occurred"
@@ -135,8 +136,6 @@ export async function getJobs() {
 		}
 
 		return json
-
-		return
 	} catch (error) {
 		console.error("Error getting jobs:", error)
 		throw error

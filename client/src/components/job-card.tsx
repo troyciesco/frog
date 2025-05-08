@@ -21,12 +21,18 @@ export function JobCard({
 	state: string
 }) {
 	return (
-		<Card className={cn(state === "active" && "animate-pulse")}>
+		<Card className={cn(state === "active" && "animate-pulse bg-blue-100")}>
 			<CardHeader>
 				<CardTitle>
 					#{id}: {title}
 				</CardTitle>
-				<CardDescription>{state}</CardDescription>
+				<CardDescription>
+					{state === "active" ? (
+						<span className="text-xl font-bold">{state}</span>
+					) : (
+						state
+					)}
+				</CardDescription>
 				<CardContent>
 					<div className="grid grid-cols-2 gap-2">
 						{progress.posts.total > 0 && (

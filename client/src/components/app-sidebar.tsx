@@ -1,36 +1,30 @@
 import {
 	Sidebar,
 	SidebarContent,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
 	SidebarRail
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
 
-const data = {
-	navMain: [
-		{
-			title: "Getting Started",
-			url: "#",
-			items: [
-				{
-					title: "Installation",
-					url: "#",
-					isActive: true
-				},
-				{
-					title: "Project Structure",
-					url: "#"
-				}
-			]
-		}
-	]
-}
+// const data = {
+// 	navMain: [
+// 		{
+// 			title: "Getting Started",
+// 			url: "#",
+// 			items: [
+// 				{
+// 					title: "Installation",
+// 					url: "#",
+// 					isActive: true
+// 				},
+// 				{
+// 					title: "Project Structure",
+// 					url: "#"
+// 				}
+// 			]
+// 		}
+// 	]
+// }
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar {...props}>
@@ -42,8 +36,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</div>
 			</SidebarHeader>
 			<SidebarContent>
-				{/* We create a SidebarGroup for each parent. */}
-				{data.navMain.map((item) => (
+				{/* Saved in case i ever add job pages etc */}
+				{/* {data.navMain.map((item) => (
 					<SidebarGroup key={item.title}>
 						<SidebarGroupLabel>{item.title}</SidebarGroupLabel>
 						<SidebarGroupContent>
@@ -58,7 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							</SidebarMenu>
 						</SidebarGroupContent>
 					</SidebarGroup>
-				))}
+				))} */}
 			</SidebarContent>
 			<SidebarRail />
 		</Sidebar>
