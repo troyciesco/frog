@@ -29,17 +29,14 @@ export async function signIn({ realm, email, password }: SignInParams) {
 	}
 }
 
-type CalculateChangesParams = {
+type RebrandCheckParams = {
 	oldBrand: string
 	newBrand: string
 }
 
-export async function calculateChanges({
-	oldBrand,
-	newBrand
-}: CalculateChangesParams) {
+export async function rebrandCheck({ oldBrand, newBrand }: RebrandCheckParams) {
 	try {
-		const response = await fetch(`${API_URL}/calculate-changes`, {
+		const response = await fetch(`${API_URL}/rebrand/check`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

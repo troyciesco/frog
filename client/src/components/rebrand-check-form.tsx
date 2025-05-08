@@ -1,7 +1,7 @@
-import { calculateChanges } from "../api"
+import { rebrandCheck } from "../api"
 import { useAppForm } from "../hooks/use-app-form"
 
-export function CalculateChangesForm({
+export function RebrandCheckForm({
 	onSuccess
 }: {
 	onSuccess: (data: Record<string, string>) => void
@@ -28,7 +28,7 @@ export function CalculateChangesForm({
 			}
 		},
 		onSubmit: async ({ value }) => {
-			const res = await calculateChanges({ ...value })
+			const res = await rebrandCheck({ ...value })
 
 			if (res.success) {
 				onSuccess({
