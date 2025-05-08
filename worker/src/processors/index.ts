@@ -59,6 +59,13 @@ export const rebrandProcessor = async (job: Job) => {
 	})
 	await processTagsOrTiers({
 		job,
+		resource: "tags",
+		newBrand,
+		total: counts["tags"],
+		...commonArgs
+	})
+	await processTagsOrTiers({
+		job,
 		resource: "tiers",
 		newBrand,
 		total: counts["tiers"],
