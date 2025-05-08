@@ -1,5 +1,6 @@
 import { rebrandCheck } from "../api"
 import { useAppForm } from "../hooks/use-app-form"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 
 export function RebrandCheckForm({
 	onSuccess
@@ -40,31 +41,41 @@ export function RebrandCheckForm({
 		}
 	})
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault()
-				form.handleSubmit()
-			}}>
-			<h2>Rebrand Details</h2>
-			<form.AppField
-				name="oldBrand"
-				children={(field) => <field.TextField label="Old Brand Name" />}
-			/>
-			<form.AppField
-				name="newBrand"
-				children={(field) => <field.TextField label="New Brand Name" />}
-			/>
-			<form.AppForm>
-				<form.Subscribe selector={(state) => state.isSubmitting}>
-					{(isSubmitting) => {
-						return (
-							<form.SubscribeButton
-								label={isSubmitting ? "Submitting..." : "Submit"}
-							/>
-						)
-					}}
-				</form.Subscribe>
-			</form.AppForm>
-		</form>
+		<Card>
+			<CardHeader>
+				<CardTitle>Step 1: Rebrand Details</CardTitle>
+			</CardHeader>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault()
+					form.handleSubmit()
+				}}>
+				<CardContent>
+					<fieldset className="grid w-full items-center gap-4">
+						<form.AppField
+							name="oldBrand"
+							children={(field) => <field.TextField label="Old Brand Name" />}
+						/>
+						<form.AppField
+							name="newBrand"
+							children={(field) => <field.TextField label="New Brand Name" />}
+						/>
+					</fieldset>
+				</CardContent>
+				<CardFooter className="flex justify-end mt-10">
+					<form.AppForm>
+						<form.Subscribe selector={(state) => state.isSubmitting}>
+							{(isSubmitting) => {
+								return (
+									<form.SubscribeButton
+										label={isSubmitting ? "Submitting..." : "Submit"}
+									/>
+								)
+							}}
+						</form.Subscribe>
+					</form.AppForm>
+				</CardFooter>
+			</form>
+		</Card>
 	)
 }

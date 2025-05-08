@@ -35,9 +35,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
-				<Link to="/">
-					<img src="/frog-logo.svg" alt="Frog logo" width={149} height={69} />
-				</Link>
+				<div className="w-full flex justify-center">
+					<Link to="/">
+						<img src="/frog-logo.svg" alt="Frog logo" width={149} height={69} />
+					</Link>
+				</div>
 			</SidebarHeader>
 			<SidebarContent>
 				{/* We create a SidebarGroup for each parent. */}

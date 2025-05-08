@@ -1,5 +1,6 @@
 import { rebrandCommit } from "../api"
 import { useAppForm } from "../hooks/use-app-form"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 
 export function RebrandCommitForm({
 	oldBrand,
@@ -48,55 +49,65 @@ export function RebrandCommitForm({
 		}
 	})
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault()
-				form.handleSubmit()
-			}}>
-			<h2>Confirm Changes</h2>
-			<form.AppField
-				name="hasBackedUp"
-				children={(field) => (
-					<field.Checkbox label="I confirm I have backed up my database." />
-				)}
-			/>
-			<form.AppField
-				name="hasCheckedSpelling"
-				children={(field) => (
-					<field.Checkbox label="I confirm I have checked the spelling of my old brand and my new brand." />
-				)}
-			/>
-			<form.AppField
-				name="hasSpotChecked"
-				children={(field) => (
-					<field.Checkbox label="I confirm I checked my content and the updates make sense." />
-				)}
-			/>
-			<form.AppForm>
-				<form.Subscribe
-					selector={(state) => ({
-						isSubmitting: state.isSubmitting,
-						hasBackedUp: state.values.hasBackedUp,
-						hasCheckedSpelling: state.values.hasCheckedSpelling,
-						hasSpotChecked: state.values.hasSpotChecked
-					})}>
-					{({
-						isSubmitting,
-						hasBackedUp,
-						hasCheckedSpelling,
-						hasSpotChecked
-					}) => {
-						const allChecked =
-							hasBackedUp && hasCheckedSpelling && hasSpotChecked
-						return (
-							<form.SubscribeButton
-								label={isSubmitting ? "Submitting..." : "Submit"}
-								disabled={!allChecked}
-							/>
-						)
-					}}
-				</form.Subscribe>
-			</form.AppForm>
-		</form>
+		<Card>
+			<CardHeader>
+				<CardTitle>Step 2: Confirm Your Changes</CardTitle>
+			</CardHeader>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault()
+					form.handleSubmit()
+				}}>
+				<CardContent>
+					<fieldset className="grid w-full items-center gap-4">
+						<form.AppField
+							name="hasBackedUp"
+							children={(field) => (
+								<field.Checkbox label="I confirm I have backed up my database." />
+							)}
+						/>
+						<form.AppField
+							name="hasCheckedSpelling"
+							children={(field) => (
+								<field.Checkbox label="I confirm I have checked the spelling of my old brand and my new brand." />
+							)}
+						/>
+						<form.AppField
+							name="hasSpotChecked"
+							children={(field) => (
+								<field.Checkbox label="I confirm I checked my content and the updates make sense." />
+							)}
+						/>
+					</fieldset>
+				</CardContent>
+				<CardFooter className="flex justify-end mt-10">
+					<form.AppForm>
+						<form.Subscribe
+							selector={(state) => ({
+								isSubmitting: state.isSubmitting,
+								hasBackedUp: state.values.hasBackedUp,
+								hasCheckedSpelling: state.values.hasCheckedSpelling,
+								hasSpotChecked: state.values.hasSpotChecked
+							})}>
+							{({
+								isSubmitting,
+								hasBackedUp,
+								hasCheckedSpelling,
+								hasSpotChecked
+							}) => {
+								const allChecked =
+									hasBackedUp && hasCheckedSpelling && hasSpotChecked
+								return (
+									<form.SubscribeButton
+										label={isSubmitting ? "Submitting..." : "Submit"}
+										disabled={!allChecked}
+									/>
+								)
+							}}
+						</form.Subscribe>
+					</form.AppForm>
+				</CardFooter>
+			</form>
+		</Card>
 	)
 }

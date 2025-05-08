@@ -59,8 +59,8 @@ export function SignInForm({
 				<CardTitle>Create project</CardTitle>
 				<CardDescription>Deploy your new project in one-click.</CardDescription>
 			</CardHeader>
-			<CardContent>
-				<form onSubmit={onFormSubmit}>
+			<form onSubmit={onFormSubmit}>
+				<CardContent>
 					<fieldset className="grid w-full items-center gap-4">
 						<div className="flex flex-col space-y-1.5">
 							<Label htmlFor="realm-input">Realm</Label>
@@ -93,11 +93,13 @@ export function SignInForm({
 							/>
 						</div>
 					</fieldset>
-				</form>
-			</CardContent>
-			<CardFooter className="flex justify-center">
-				<Button> {isSigningIn ? "Loading..." : "Sign In"}</Button>
-			</CardFooter>
+				</CardContent>
+				<CardFooter className="flex justify-center mt-10">
+					<Button className="w-full" type="submit">
+						{isSigningIn ? "Loading..." : "Sign In"}
+					</Button>
+				</CardFooter>
+			</form>
 		</Card>
 	)
 }
