@@ -29,7 +29,7 @@ export function Jobs() {
 	}, [])
 
 	return (
-		<div>
+		<div className="text-wrap max-w-2xl overflow-x-hidden">
 			<div>jobs</div>
 			<pre>{JSON.stringify(jobs, null, 2)}</pre>
 		</div>

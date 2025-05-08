@@ -1,12 +1,19 @@
 import {
-	Link,
-	Outlet,
 	createFileRoute,
+	Outlet,
 	redirect,
 	useRouter
 } from "@tanstack/react-router"
 
-import { useAuth } from "../hooks/use-auth"
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger
+} from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { Separator } from "@radix-ui/react-separator"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/use-auth"
 
 export const Route = createFileRoute("/_auth")({
 	beforeLoad: ({ context, location }) => {
@@ -27,7 +34,7 @@ function AuthLayout() {
 	const navigate = Route.useNavigate()
 	const auth = useAuth()
 
-	const handleLogout = () => {
+	const handleSignOut = () => {
 		if (window.confirm("Are you sure you want to logout?")) {
 			auth.signOut().then(() => {
 				router.invalidate().finally(() => {
@@ -38,28 +45,32 @@ function AuthLayout() {
 	}
 
 	return (
-		<div className="p-2 h-full">
-			<h1>Authenticated Route</h1>
-			<p>This route's content is only visible to authenticated users.</p>
-			<ul className="py-2 flex gap-2">
-				<li>
-					<Link
-						to="/dashboard"
-						className="hover:underline data-[status='active']:font-semibold">
-						Dashboard
-					</Link>
-				</li>
-				<li>
-					<button
-						type="button"
-						className="hover:underline"
-						onClick={handleLogout}>
-						Logout
-					</button>
-				</li>
-			</ul>
-			<hr />
-			<Outlet />
-		</div>
+		<SidebarProvider>
+			<AppSidebar />
+			<SidebarInset>
+				<header className="flex justify-between h-16 shrink-0 items-center gap-2 border-b px-4 w-full">
+					<div className="flex items-center gap-2">
+						<SidebarTrigger className="-ml-1" />
+						<div className="text-sm flex items-center">
+							<span>
+								<span className="font-bold">User: </span>
+								{auth.user?.email}
+							</span>
+							<Separator orientation="vertical" className="mr-2 h-4" />
+							<span>
+								<span className="font-bold">Ghost Site: </span>
+								{auth.user?.realm}
+							</span>
+						</div>
+					</div>
+					<Button onClick={handleSignOut}>Sign Out</Button>
+				</header>
+				<div className="flex flex-1 flex-col gap-4 p-4">
+					<div className="min-h-[100vh] flex-1 md:min-h-min">
+						<Outlet />
+					</div>
+				</div>
+			</SidebarInset>
+		</SidebarProvider>
 	)
 }

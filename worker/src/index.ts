@@ -327,9 +327,9 @@ const rebrandProcessor = async (job: Job) => {
 				succeeded: 0,
 				failed: 0,
 				total: counts[resource],
-				created_at: job.timestamp,
-				updated_at: job.timestamp,
-				completed_at: null
+				createdAt: job.timestamp,
+				updatedAt: job.timestamp,
+				completedAt: null
 			}
 		])
 	)
