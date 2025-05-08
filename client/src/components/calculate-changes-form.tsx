@@ -4,7 +4,7 @@ import { useAppForm } from "../hooks/use-app-form"
 export function CalculateChangesForm({
 	onSuccess
 }: {
-	onSuccess: (data: { id: string }[]) => void
+	onSuccess: (data: Record<string, string>) => void
 }) {
 	const form = useAppForm({
 		defaultValues: {
@@ -29,9 +29,13 @@ export function CalculateChangesForm({
 		},
 		onSubmit: async ({ value }) => {
 			const res = await calculateChanges({ ...value })
-			console.log(res)
+
 			if (res.success) {
-				onSuccess(res.data)
+				onSuccess({
+					...res.data,
+					oldBrand: value.oldBrand,
+					newBrand: value.newBrand
+				})
 			}
 		}
 	})
