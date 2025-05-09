@@ -144,7 +144,8 @@ export const processTagsOrTiers = async ({
 						name: newName,
 						description: newDescription,
 						slug: newSlug,
-						updatedAt: t.updated_at
+						updatedAt: t.updated_at,
+						adminKey
 					})
 					return true
 				} catch {

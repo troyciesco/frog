@@ -126,7 +126,8 @@ export const processNewsletters = async ({
 						id: n.id,
 						name: newName,
 						description: newDescription,
-						updatedAt: n.updated_at
+						updatedAt: n.updated_at,
+						adminKey
 					})
 					return true
 				} catch {
