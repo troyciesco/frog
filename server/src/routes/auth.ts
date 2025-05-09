@@ -68,13 +68,17 @@ const app = new Hono()
 				try {
 					const bearerToken = await createGhostToken(adminKey)
 
-					const res = await fetch(`${realm}/ghost/api/admin/site`, {
-						headers: {
-							Authorization: `Ghost ${bearerToken}`
+					const res = await fetch(
+						`${realm}/ghost/api/admin/posts?limit=1&fields=id`,
+						{
+							headers: {
+								Authorization: `Ghost ${bearerToken}`
+							}
 						}
-					})
-					// if we can fetch the site, that means the auth is working
-					await res.json()
+					)
+					// if we can fetch a post, that means the auth is working
+					const posts = await res.json()
+					console.log(posts)
 					if (!res.ok) {
 						return c.json(
 							{

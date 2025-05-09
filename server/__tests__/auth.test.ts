@@ -115,11 +115,13 @@ describe("Auth Endpoints", () => {
 					}
 				}
 
-				if (url.toString().includes("/ghost/api/admin/site")) {
+				if (
+					url.toString().includes("/ghost/api/admin/posts?limit=1&fields=id")
+				) {
 					return Promise.resolve({
 						ok: true,
 						status: 200,
-						json: () => Promise.resolve({ title: "site" })
+						json: () => Promise.resolve({ id: "1" })
 					})
 				}
 
