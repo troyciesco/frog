@@ -26,7 +26,7 @@ const app = new Hono()
 		if (!job) {
 			return c.json({ success: false, message: "Not found" }, 404)
 		}
-		console.log(job)
+
 		return c.json({ success: true, data: { job } }, 200)
 	})
 

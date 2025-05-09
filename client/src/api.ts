@@ -1,36 +1,6 @@
 import { API_URL } from "./constants"
 import type { Job } from "./types"
 
-type SignInParams = {
-	realm: string
-	email: string
-	password: string
-}
-
-export async function signIn({ realm, email, password }: SignInParams) {
-	try {
-		const res = await fetch(`${API_URL}/auth/sign-in`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({ realm, email, password }),
-			credentials: "include"
-		})
-
-		if (!res.ok) {
-			const errorData = await res.json().catch(() => ({}))
-			throw new Error(errorData.message || "Failed to sign in")
-		}
-
-		const json = await res.json()
-		return { res: json, error: null }
-	} catch (error) {
-		console.error("Sign in error:", error)
-		throw error
-	}
-}
-
 type RebrandCheckParams = {
 	oldBrand: string
 	newBrand: string

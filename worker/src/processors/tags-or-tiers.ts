@@ -1,5 +1,5 @@
 import type { Job } from "bullmq"
-import { filterFriendlyString } from "../utils/index.js"
+import { CONCURRENCY, filterFriendlyString } from "../utils/index.js"
 import { slugify } from "@tryghost/string"
 import { ghostFetch } from "../services/ghost-api.js"
 import pMap from "p-map"
@@ -20,7 +20,6 @@ type GhostTagOrTier = {
 }
 
 type TagUpdateParams = {
-	ghostSession: string
 	realm: string
 	resource: "tags" | "tiers"
 	origin: string
@@ -28,12 +27,12 @@ type TagUpdateParams = {
 	name: string
 	slug: string
 	description: string | null
-	// maybe?
 	updatedAt: string
+	ghostSession?: string
+	adminKey?: string
 }
 
 const updateTag = async ({
-	ghostSession,
 	realm,
 	resource,
 	origin,
@@ -41,18 +40,18 @@ const updateTag = async ({
 	name,
 	slug,
 	description,
-	updatedAt
+	updatedAt,
+	ghostSession,
+	adminKey
 }: TagUpdateParams) => {
-	const url = `${realm}/ghost/api/admin/${resource}/${id}`
-
-	const res = await fetch(url, {
+	const res = await ghostFetch({
+		realm,
+		resource,
+		query: id,
 		method: "PUT",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-			Cookie: ghostSession,
-			Origin: origin
-		},
+		ghostSession,
+		adminKey,
+		origin,
 		body: JSON.stringify({
 			[resource]: [
 				{
@@ -77,22 +76,24 @@ type ProcessTagsParams = {
 	job: Job
 	resource: "tags" | "tiers"
 	realm: string
-	ghostSession: string
 	origin: string
 	total: number
 	oldBrand: string
 	newBrand: string
+	ghostSession?: string
+	adminKey?: string
 }
 
 export const processTagsOrTiers = async ({
 	job,
 	resource,
 	realm,
-	ghostSession,
 	origin,
 	total,
 	oldBrand,
-	newBrand
+	newBrand,
+	ghostSession,
+	adminKey
 }: ProcessTagsParams) => {
 	let succeeded = 0
 	let failed = 0
@@ -113,8 +114,9 @@ export const processTagsOrTiers = async ({
 			resource,
 			realm,
 			query,
+			origin,
 			ghostSession,
-			origin
+			adminKey
 		})
 		const data = await res.json()
 
@@ -149,7 +151,7 @@ export const processTagsOrTiers = async ({
 					return false
 				}
 			},
-			{ concurrency: 25 }
+			{ concurrency: CONCURRENCY }
 		)
 
 		succeeded += results.filter(Boolean).length

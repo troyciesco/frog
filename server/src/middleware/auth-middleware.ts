@@ -5,7 +5,7 @@ import { SESSION_COOKIE_NAME } from "../lib/constants.js"
 
 export const authMiddleware = createMiddleware<{
 	Variables: {
-		auth: () => { realm: string; ghostSession: string }
+		auth: () => { realm: string; ghostSession?: string; adminKey?: string }
 	}
 }>(async (c, next) => {
 	const sessionCookie = getCookie(c, SESSION_COOKIE_NAME)
@@ -15,7 +15,8 @@ export const authMiddleware = createMiddleware<{
 		return c.json({ success: false, message: "Unauthorized" }, 401)
 	}
 
-	const { realm, ghostSession } = session
-	c.set("auth", () => ({ realm, ghostSession }))
+	// destructured because email isn't needed for the api (but it's useful for frontend)
+	const { realm, ghostSession, adminKey } = session
+	c.set("auth", () => ({ realm, ghostSession, adminKey }))
 	await next()
 })

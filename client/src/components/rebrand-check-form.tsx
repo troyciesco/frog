@@ -35,7 +35,6 @@ export function RebrandCheckForm({
 		},
 		onSubmit: async ({ value }) => {
 			const { res, error } = await rebrandCheck({ ...value })
-			console.log(res)
 			if (res?.success) {
 				onSuccess({
 					...res.data,

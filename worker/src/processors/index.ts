@@ -6,9 +6,9 @@ import { processTagsOrTiers } from "./tags-or-tiers.js"
 import { processNewsletters } from "./newsletters.js"
 
 export const rebrandProcessor = async (job: Job) => {
-	const { realm, ghostSession, oldBrand, newBrand, origin } = job.data
+	const { realm, ghostSession, adminKey, oldBrand, newBrand, origin } = job.data
 
-	const commonArgs = { realm, oldBrand, ghostSession, origin }
+	const commonArgs = { realm, oldBrand, ghostSession, adminKey, origin }
 
 	// do an initial fetch of the resources to get totals
 	const res = await Promise.all(

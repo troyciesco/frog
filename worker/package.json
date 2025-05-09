@@ -16,6 +16,7 @@
 		"@tryghost/string": "^0.2.13",
 		"bullmq": "^5.52.1",
 		"ioredis": "^5.6.1",
+		"jose": "^6.0.11",
 		"p-map": "^7.0.3"
 	},
 	"devDependencies": {

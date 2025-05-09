@@ -1,5 +1,5 @@
 import type { Job } from "bullmq"
-import { filterFriendlyString } from "../utils/index.js"
+import { CONCURRENCY, filterFriendlyString } from "../utils/index.js"
 import { slugify } from "@tryghost/string"
 import { ghostFetch } from "../services/ghost-api.js"
 import pMap from "p-map"
@@ -15,8 +15,8 @@ type GhostPost = {
 	feature_image_alt: string | null
 	feature_image_caption: string | null
 }
+
 type PostUpdateParams = {
-	ghostSession: string
 	realm: string
 	resource: "posts" | "pages"
 	origin: string
@@ -28,10 +28,11 @@ type PostUpdateParams = {
 	updatedAt: string
 	feature_image_alt: string | null
 	feature_image_caption: string | null
+	ghostSession?: string
+	adminKey?: string
 }
 
 const updatePost = async ({
-	ghostSession,
 	realm,
 	resource,
 	origin,
@@ -42,18 +43,18 @@ const updatePost = async ({
 	custom_excerpt,
 	updatedAt,
 	feature_image_alt,
-	feature_image_caption
+	feature_image_caption,
+	ghostSession,
+	adminKey
 }: PostUpdateParams) => {
-	const url = `${realm}/ghost/api/admin/${resource}/${id}`
-
-	const res = await fetch(url, {
+	const res = await ghostFetch({
+		realm,
+		resource,
+		query: id,
 		method: "PUT",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-			Cookie: ghostSession,
-			Origin: origin
-		},
+		ghostSession,
+		adminKey,
+		origin,
 		body: JSON.stringify({
 			[resource]: [
 				{
@@ -81,21 +82,23 @@ type ProcessPostsParams = {
 	job: Job
 	resource: "posts" | "pages"
 	realm: string
-	ghostSession: string
 	origin: string
 	total: number
 	oldBrand: string
 	newBrand: string
+	ghostSession?: string
+	adminKey?: string
 }
 export const processPostsOrPages = async ({
 	job,
 	resource,
 	realm,
-	ghostSession,
 	origin,
 	total,
 	oldBrand,
-	newBrand
+	newBrand,
+	ghostSession,
+	adminKey
 }: ProcessPostsParams) => {
 	let succeeded = 0
 	let failed = 0
@@ -117,11 +120,12 @@ export const processPostsOrPages = async ({
 			resource,
 			realm,
 			query,
+			origin,
 			ghostSession,
-			origin
+			adminKey
 		})
 		const data = await res.json()
-		console.log(data)
+
 		if (data[resource].length === 0 || succeeded + failed >= total) break
 
 		const results = await pMap(
@@ -147,7 +151,6 @@ export const processPostsOrPages = async ({
 						: p.slug
 
 					await updatePost({
-						ghostSession,
 						realm,
 						resource,
 						origin,
@@ -158,14 +161,16 @@ export const processPostsOrPages = async ({
 						slug: newSlug,
 						updatedAt: p.updated_at,
 						feature_image_alt: newFeatureImageAlt,
-						feature_image_caption: newFeatureImageCaption
+						feature_image_caption: newFeatureImageCaption,
+						ghostSession,
+						adminKey
 					})
 					return true
 				} catch {
 					return false
 				}
 			},
-			{ concurrency: 25 }
+			{ concurrency: CONCURRENCY }
 		)
 
 		succeeded += results.filter(Boolean).length
