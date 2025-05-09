@@ -9,4 +9,4 @@ export const resources = [
 	"newsletters"
 ] as const
 
-export const CONCURRENCY = 25
+export const CONCURRENCY = 10
