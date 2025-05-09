@@ -77,8 +77,7 @@ const app = new Hono()
 						}
 					)
 					// if we can fetch a post, that means the auth is working
-					const posts = await res.json()
-					console.log(posts)
+					await res.json()
 					if (!res.ok) {
 						return c.json(
 							{
