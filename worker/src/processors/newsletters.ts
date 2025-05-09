@@ -12,37 +12,36 @@ type GhostNewsletter = {
 }
 
 type NewsletterUpdateParams = {
-	ghostSession: string
 	realm: string
 	resource: "newsletters"
 	origin: string
 	id: string
 	name: string
 	description: string | null
-	// maybe?
 	updatedAt: string
+	ghostSession?: string
+	adminKey?: string
 }
 
 const updateNewsletter = async ({
-	ghostSession,
 	realm,
 	resource,
 	origin,
 	id,
 	name,
 	description,
-	updatedAt
+	updatedAt,
+	ghostSession,
+	adminKey
 }: NewsletterUpdateParams) => {
-	const url = `${realm}/ghost/api/admin/${resource}/${id}`
-
-	const res = await fetch(url, {
+	const res = await ghostFetch({
+		realm,
+		resource,
+		query: id,
 		method: "PUT",
-		credentials: "include",
-		headers: {
-			"Content-Type": "application/json",
-			Cookie: ghostSession,
-			Origin: origin
-		},
+		ghostSession,
+		adminKey,
+		origin,
 		body: JSON.stringify({
 			[resource]: [
 				{
@@ -66,22 +65,24 @@ type ProcessNewslettersParams = {
 	job: Job
 	resource: "newsletters"
 	realm: string
-	ghostSession: string
 	origin: string
 	total: number
 	oldBrand: string
 	newBrand: string
+	ghostSession?: string
+	adminKey?: string
 }
 
 export const processNewsletters = async ({
 	job,
 	resource,
 	realm,
-	ghostSession,
 	origin,
 	total,
 	oldBrand,
-	newBrand
+	newBrand,
+	ghostSession,
+	adminKey
 }: ProcessNewslettersParams) => {
 	let succeeded = 0
 	let failed = 0
@@ -101,6 +102,7 @@ export const processNewsletters = async ({
 			realm,
 			query,
 			ghostSession,
+			adminKey,
 			origin
 		})
 		const data = await res.json()

@@ -1,14 +1,18 @@
 import { Hono } from "hono"
-import { encrypt } from "../encryption.js"
+import { createGhostToken, encrypt } from "../encryption.js"
 import { SESSION_COOKIE_NAME } from "../lib/constants.js"
 import { getAuth } from "../lib/get-auth.js"
-import { authMiddleware } from "../middleware/auth-middleware.js"
 
 const app = new Hono()
 	.basePath("/auth")
 	.post("/sign-in", async (c) => {
 		try {
-			const { realm: realmField, email, password } = await c.req.json()
+			const {
+				realm: realmField,
+				email,
+				password,
+				adminKey
+			} = await c.req.json()
 
 			if (
 				!realmField.startsWith("http://") &&
@@ -27,38 +31,60 @@ const app = new Hono()
 				? realmField.slice(0, -1)
 				: realmField
 
-			const res = await fetch(`${realm}/ghost/api/admin/session`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Origin: new URL(c.req.url).origin
-				},
-				body: JSON.stringify({ username: email, password })
-			})
+			let ghostSession
 
-			if (!res.ok) {
-				return c.json(
-					{
-						success: false,
-						message:
-							"Sign in failed. Check your credentials and make sure you're using a Ghost site."
+			if (email && password) {
+				const res = await fetch(`${realm}/ghost/api/admin/session`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Origin: new URL(c.req.url).origin
 					},
-					401
-				)
+					body: JSON.stringify({ username: email, password })
+				})
+
+				if (!res.ok) {
+					return c.json(
+						{
+							success: false,
+							message:
+								"Sign in failed. Check your credentials and make sure you're using a Ghost site."
+						},
+						401
+					)
+				}
+
+				ghostSession = res.headers
+					.getSetCookie()
+					?.find((cookie) => cookie.startsWith("ghost-admin-api-session="))
+
+				if (!ghostSession) {
+					return c.json(
+						{ success: false, message: "Failed to get Ghost session" },
+						500
+					)
+				}
+			} else if (adminKey) {
+				const bearerToken = await createGhostToken(adminKey)
+				const res = await fetch(`${realm}/ghost/api/admin/site`, {
+					headers: {
+						Authorization: `Ghost ${bearerToken}`
+					}
+				})
+				// if we can fetch the site, that means the auth is working
+				await res.json()
+				if (!res.ok) {
+					return c.json(
+						{
+							success: false,
+							message: "Failed to sign in with an Admin API Key."
+						},
+						401
+					)
+				}
 			}
 
-			const ghostSession = res.headers
-				.getSetCookie()
-				?.find((cookie) => cookie.startsWith("ghost-admin-api-session="))
-
-			if (!ghostSession) {
-				return c.json(
-					{ success: false, message: "Failed to get Ghost session" },
-					500
-				)
-			}
-
-			const session = await encrypt({ email, realm, ghostSession })
+			const session = await encrypt({ email, realm, ghostSession, adminKey })
 
 			c.header(
 				"Set-Cookie",

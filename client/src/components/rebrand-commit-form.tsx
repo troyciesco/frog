@@ -69,7 +69,6 @@ export function RebrandCommitForm({
 				newBrand
 			})
 
-			console.log(res)
 			if (res?.success) {
 				onSuccess(res.data.jobId)
 			}

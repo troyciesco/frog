@@ -50,10 +50,12 @@ function AuthLayout() {
 					<div className="flex items-center gap-2">
 						<SidebarTrigger className="-ml-1" />
 						<div className="text-sm flex items-center">
-							<span>
-								<span className="font-bold">User: </span>
-								{auth.user?.email}
-							</span>
+							{auth.user?.email && (
+								<span>
+									<span className="font-bold">User: </span>
+									{auth.user.email}
+								</span>
+							)}
 							<Separator orientation="vertical" className="mr-2 h-4" />
 							<span>
 								<span className="font-bold">Ghost Site: </span>

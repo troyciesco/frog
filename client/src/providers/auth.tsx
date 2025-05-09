@@ -1,14 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import { API_URL } from "../constants"
-import { AuthContext } from "./contexts/auth-context"
+import { AuthContext, type SignInParams } from "./contexts/auth-context"
 
-type SignInParams = {
-	realm: string
-	email: string
-	password: string
-}
-
-const key = "tanstack.auth.user"
+const key = "frog.auth.user"
 
 function getStoredUser() {
 	return localStorage.getItem(key) ? JSON.parse(localStorage.getItem(key)!) : ""
@@ -23,10 +17,10 @@ function setStoredUser(user: string | null) {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [user, setUser] = useState<{ email: string; realm: string } | null>(
+	const [user, setUser] = useState<{ email?: string; realm: string } | null>(
 		getStoredUser()
 	)
-	const isAuthenticated = Boolean(user?.email && user.realm)
+	const isAuthenticated = Boolean(user?.realm)
 
 	const signOut = useCallback(async () => {
 		const response = await fetch(`${API_URL}/auth/sign-out`, {
@@ -43,14 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, [])
 
 	const signIn = useCallback(
-		async ({ realm, email, password }: SignInParams) => {
+		async ({ realm, email, password, adminKey }: SignInParams) => {
 			try {
 				const response = await fetch(`${API_URL}/auth/sign-in`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify({ realm, email, password }),
+					body: JSON.stringify({ realm, email, password, adminKey }),
 					credentials: "include"
 				})
 

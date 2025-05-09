@@ -13,7 +13,7 @@ import { app } from "../src/index.js"
 type AuthResponse = {
 	success: boolean
 	message: string
-	user?: { email: string; realm: string }
+	user?: { email?: string; realm: string }
 }
 
 vi.mock("../src/encryption.js", () => ({
@@ -21,7 +21,8 @@ vi.mock("../src/encryption.js", () => ({
 	verifySession: vi.fn().mockResolvedValue({
 		realm: "https://test.ghost.io",
 		ghostSession: "mock-session-cookie"
-	})
+	}),
+	createGhostToken: vi.fn().mockResolvedValue("faketoken")
 }))
 
 const originalFetch = global.fetch
@@ -114,6 +115,14 @@ describe("Auth Endpoints", () => {
 					}
 				}
 
+				if (url.toString().includes("/ghost/api/admin/site")) {
+					return Promise.resolve({
+						ok: true,
+						status: 200,
+						json: () => Promise.resolve({ title: "site" })
+					})
+				}
+
 				return originalFetch(url, options)
 			})
 		})
@@ -122,7 +131,7 @@ describe("Auth Endpoints", () => {
 			global.fetch = originalFetch
 		})
 
-		it("authenticates a user with valid creds and realm", async () => {
+		it("authenticates a user with valid email, password, and realm", async () => {
 			const res = await client.auth["sign-in"].$post(
 				{
 					json: validArgs
@@ -149,7 +158,34 @@ describe("Auth Endpoints", () => {
 			// @ts-expect-error we want to make sure the password isn't getting sent back
 			expect(json.user.password).not.toBeDefined()
 		})
+		it("authenticates a user with valid admin API Key and realm", async () => {
+			const adminKey = "fakeValidAdminKey"
 
+			const res = await client.auth["sign-in"].$post(
+				{
+					json: { realm: validArgs.realm, adminKey }
+				},
+				{
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}
+			)
+
+			const json: AuthResponse = await res.json()
+
+			expect(res.status).toBe(200)
+			expect(json).toMatchObject({
+				success: true,
+				message: "Authentication successful"
+			})
+
+			expect(json.user).toMatchObject({
+				realm: validArgs.realm
+			})
+
+			expect(json.user?.email).not.toBeDefined()
+		})
 		it("fails if the realm is not a ghost site", async () => {
 			const res = await client.auth["sign-in"].$post(
 				{

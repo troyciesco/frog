@@ -1,17 +1,18 @@
 import { Hono } from "hono"
 import { getAuth } from "../lib/get-auth.js"
 import { slugify } from "@tryghost/string"
-import { Queue, type JobState } from "bullmq"
-import { connection } from "../lib/redis-connection.js"
+import { type JobState } from "bullmq"
 import { rebrandQueue } from "../lib/rebrand-queue.js"
 import { getRedisSetKey } from "../lib/constants.js"
 import { getJobs } from "../lib/get-jobs.js"
+import { createGhostToken } from "../encryption.js"
 
 type GhostFetchOpts = {
 	realm: string
 	resource: string
 	query: string
-	ghostSession: string
+	ghostSession?: string
+	adminKey?: string
 	origin: string
 }
 const ghostFetch = async ({
@@ -19,23 +20,31 @@ const ghostFetch = async ({
 	resource,
 	query,
 	ghostSession,
+	adminKey,
 	origin
 }: GhostFetchOpts) => {
+	let headers: HeadersInit = { Origin: origin }
+	let bearerToken
+
+	if (adminKey) {
+		bearerToken = await createGhostToken(adminKey)
+		headers.Authorization = `Ghost ${bearerToken}`
+	} else if (ghostSession) {
+		headers.Cookie = ghostSession
+	}
 	const url = `${realm}/ghost/api/admin/${resource}?${query}`
 	return fetch(url, {
 		credentials: "include",
-		headers: {
-			Cookie: ghostSession,
-			Origin: origin
-		}
+		headers
 	})
 }
 
 type BaseCountParams = {
 	realm: string
 	oldBrand: string
-	ghostSession: string
 	origin: string
+	ghostSession?: string
+	adminKey?: string
 }
 
 const filterFriendlyString = (string: string) => string.replace(/'/g, "\\'")
@@ -48,7 +57,13 @@ type GetCountParams = {
 // yay currying!
 const getCount =
 	({ resource, extraFields = [] }: GetCountParams) =>
-	async ({ realm, oldBrand, ghostSession, origin }: BaseCountParams) => {
+	async ({
+		realm,
+		oldBrand,
+		ghostSession,
+		origin,
+		adminKey
+	}: BaseCountParams) => {
 		const fields = ["id", ...extraFields].join(",")
 
 		const filterFriendlyOldBrand = filterFriendlyString(oldBrand)
@@ -69,7 +84,14 @@ const getCount =
 			filter: filters[resource]
 		}).toString()
 
-		return ghostFetch({ realm, resource, query, ghostSession, origin })
+		return ghostFetch({
+			realm,
+			resource,
+			query,
+			ghostSession,
+			adminKey,
+			origin
+		})
 	}
 
 const getPostCount = getCount({
@@ -129,7 +151,7 @@ const validatePayload = ({
 const app = new Hono()
 	.basePath("/rebrand")
 	.post("/check", async (c) => {
-		const { realm, ghostSession } = getAuth(c)
+		const { realm, ghostSession, adminKey } = getAuth(c)
 
 		try {
 			const { oldBrand, newBrand } = await c.req.json<{
@@ -138,7 +160,7 @@ const app = new Hono()
 			}>()
 
 			const origin = new URL(c.req.url).origin
-			const commonArgs = { realm, oldBrand, ghostSession, origin }
+			const commonArgs = { realm, oldBrand, ghostSession, adminKey, origin }
 
 			const payloadValidationMessage = validatePayload({ oldBrand, newBrand })
 
@@ -228,7 +250,7 @@ const app = new Hono()
 		}
 	})
 	.post("/commit", async (c) => {
-		const { realm, ghostSession } = getAuth(c)
+		const { realm, ghostSession, adminKey } = getAuth(c)
 
 		try {
 			const { oldBrand, newBrand } = await c.req.json<{
@@ -267,6 +289,7 @@ const app = new Hono()
 				// don't love this, but it's secure as long as an attacker
 				// doesn't have the Ghost server decrypt key
 				ghostSession,
+				adminKey,
 				oldBrand,
 				newBrand,
 				origin

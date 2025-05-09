@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest"
 
 // Now import the module after setting the environment variable
-import { encrypt, decrypt, verifySession } from "../src/encryption.js"
+import {
+	encrypt,
+	decrypt,
+	verifySession,
+	createGhostToken
+} from "../src/encryption.js"
 
 describe("Encryption Module", () => {
 	const testSessionData = {
@@ -59,5 +64,13 @@ describe("Encryption Module", () => {
 	it("should return null when verifying undefined", async () => {
 		const verified = await verifySession(undefined)
 		expect(verified).toBeNull()
+	})
+
+	it("should create a valid Ghost admin API token", async () => {
+		const mockAdminKey = "a:1010101010"
+		const token = await createGhostToken(mockAdminKey)
+
+		expect(token).toBeDefined()
+		expect(token.split(".").length).toBe(3)
 	})
 })
