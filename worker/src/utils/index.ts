@@ -8,3 +8,5 @@ export const resources = [
 	"tiers",
 	"newsletters"
 ] as const
+
+export const CONCURRENCY = 25

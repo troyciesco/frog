@@ -94,18 +94,18 @@ export function SignInForm({
 						<li className="ml-3">
 							<ul className="list-disc">
 								Either:
-								<li className="ml-3">
-									the email and password you use to sign in to your Ghost admin
+								<li className="ml-2">
+									The email and password you use to sign in to your Ghost admin
 									panel
 								</li>
-								<li className="ml-3">
-									Your admin API key.{" "}
+								<li className="ml-2">
+									An admin API key.{" "}
 									<a
-										className="text-xs underline"
+										className="text-xs underline flex items-center"
 										href="https://ghost.org/docs/admin-api/#token-authentication"
 										target="_blank">
 										See Ghost docs.{" "}
-										<ExternalLink height={12} className="inline" />
+										<ExternalLink height={12} className="inline underline" />
 									</a>
 								</li>
 							</ul>
@@ -117,7 +117,7 @@ export function SignInForm({
 				<CardContent>
 					<fieldset className="grid w-full items-center gap-4">
 						<div className="flex flex-col space-y-2">
-							<Label htmlFor="realm-input">Ghost Site</Label>
+							<Label htmlFor="realm-input">Ghost Site (required)</Label>
 							<Input
 								id="realm-input"
 								name="realm"
@@ -146,6 +146,11 @@ export function SignInForm({
 								placeholder="Enter your password"
 								type="password"
 							/>
+						</div>
+						<div className="relative flex items-center py-4">
+							<div className="flex-grow border-t border-gray-300"></div>
+							<span className="flex-shrink mx-4 text-gray-500 text-sm">OR</span>
+							<div className="flex-grow border-t border-gray-300"></div>
 						</div>
 						<div className="flex flex-col space-y-2">
 							<Label htmlFor="admin-key-input">Admin API Key</Label>

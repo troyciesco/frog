@@ -33,7 +33,7 @@ const app = new Hono()
 
 			let ghostSession
 
-			if (email && password) {
+			if (email && password && !adminKey) {
 				const res = await fetch(`${realm}/ghost/api/admin/session`, {
 					method: "POST",
 					headers: {

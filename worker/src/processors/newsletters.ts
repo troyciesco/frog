@@ -1,5 +1,5 @@
 import type { Job } from "bullmq"
-import { filterFriendlyString } from "../utils/index.js"
+import { CONCURRENCY, filterFriendlyString } from "../utils/index.js"
 import { ghostFetch } from "../services/ghost-api.js"
 import pMap from "p-map"
 import { updateProgress } from "../utils/update-progress.js"
@@ -133,7 +133,7 @@ export const processNewsletters = async ({
 					return false
 				}
 			},
-			{ concurrency: 25 }
+			{ concurrency: CONCURRENCY }
 		)
 
 		succeeded += results.filter(Boolean).length
