@@ -4,7 +4,18 @@ import { rebrandProcessor } from "./processors/index.js"
 import { rebrandQueue } from "./queues/rebrand-queue.js"
 
 async function setupRebrandWorker(queueName: string) {
-	new Worker(queueName, rebrandProcessor, { connection, concurrency: 10 })
+	new Worker(queueName, rebrandProcessor, {
+		connection,
+		removeOnComplete: {
+			age: 24 * 3600, // keep up to 24 hours
+			count: 20
+		},
+		removeOnFail: {
+			age: 24 * 3600, // keep up to 24 hours
+			count: 20
+		},
+		concurrency: 10
+	})
 	console.log(
 		`🐸 Worker up - connected to ${connection.options.host}:${connection.options.port}`
 	)
