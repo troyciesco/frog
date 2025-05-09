@@ -210,6 +210,29 @@ describe("Auth Endpoints", () => {
 					"Sign in failed. Check your credentials and make sure you're using a Ghost site."
 			})
 		})
+		it("fails if neither an admin API key nor email/password are provided", async () => {
+			const res = await client.auth["sign-in"].$post(
+				{
+					json: {
+						realm: validArgs.realm
+					}
+				},
+				{
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}
+			)
+
+			const json: AuthResponse = await res.json()
+
+			expect(res.status).toBe(401)
+			expect(json).toMatchObject({
+				success: false,
+				message:
+					"Either an Admin API Key or your email and password are required."
+			})
+		})
 		it("fails if the email is wrong, but doesn't reveal specifics in the error message", async () => {
 			const res = await client.auth["sign-in"].$post(
 				{

@@ -65,23 +65,44 @@ const app = new Hono()
 					)
 				}
 			} else if (adminKey) {
-				const bearerToken = await createGhostToken(adminKey)
-				const res = await fetch(`${realm}/ghost/api/admin/site`, {
-					headers: {
-						Authorization: `Ghost ${bearerToken}`
+				try {
+					const bearerToken = await createGhostToken(adminKey)
+
+					const res = await fetch(`${realm}/ghost/api/admin/site`, {
+						headers: {
+							Authorization: `Ghost ${bearerToken}`
+						}
+					})
+					// if we can fetch the site, that means the auth is working
+					await res.json()
+					if (!res.ok) {
+						return c.json(
+							{
+								success: false,
+								message: "Failed to sign in with an Admin API Key."
+							},
+							401
+						)
 					}
-				})
-				// if we can fetch the site, that means the auth is working
-				await res.json()
-				if (!res.ok) {
+				} catch (error) {
+					console.error("Sign in error:", error)
 					return c.json(
 						{
 							success: false,
-							message: "Failed to sign in with an Admin API Key."
+							message: "Failed to create a token. Is your API Key correct?"
 						},
-						401
+						500
 					)
 				}
+			} else {
+				return c.json(
+					{
+						success: false,
+						message:
+							"Either an Admin API Key or your email and password are required."
+					},
+					401
+				)
 			}
 
 			const session = await encrypt({ email, realm, ghostSession, adminKey })

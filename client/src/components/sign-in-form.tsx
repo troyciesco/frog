@@ -101,11 +101,11 @@ export function SignInForm({
 								<li className="ml-3">
 									Your admin API key.{" "}
 									<a
-										className="text-sm underline"
+										className="text-xs underline"
 										href="https://ghost.org/docs/admin-api/#token-authentication"
 										target="_blank">
-										Learn more in the Ghost docs.
-										<ExternalLink />
+										See Ghost docs.{" "}
+										<ExternalLink height={12} className="inline" />
 									</a>
 								</li>
 							</ul>
