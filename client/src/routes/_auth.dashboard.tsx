@@ -168,7 +168,7 @@ function DashboardPage() {
 				</CardHeader>
 				<CardContent>
 					{step === 3 && jobId && (
-						<Alert className="mb-4">
+						<Alert className="mb-4" variant="success">
 							<AlertTitle>
 								New job created,
 								<Button variant="link" onClick={() => window.location.reload()}>
