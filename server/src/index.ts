@@ -29,7 +29,7 @@ export const app = new Hono()
 	.use("/jobs", authMiddleware)
 	// TODO: this is a bad spot for this, but putting it in the auth file breaks typesafety in tests
 	.use("/auth/sign-out", authMiddleware)
-	.route("/", adminRoute)
+	// .route("/", adminRoute)
 	.route("/", authRoute)
 	.route("/", rebrandRoute)
 	.route("/", jobsRoute)
